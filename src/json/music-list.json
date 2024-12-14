@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Dignity · B-Side",
+    "imgSrc": "music1.png",
+    "audioSrc": "oldtricks.mp3",
+    "artist": "Lukas",
+    "description": "Chillhop Essentials Winter 2017"
+  },
+  {
+    "title": "Chillhop Essentials Summer 2017",
+    "imgSrc": "music2.png",
+    "audioSrc": "music1.mp3",
+    "artist": "Lukas Leonhard",
+    "description": "℗ Chillhop Music Released on: 2017-06-12"
+  },
+  {
+    "title": "Flying",
+    "imgSrc": "music3.png",
+    "audioSrc": "dignity.mp3",
+    "artist": "Peder B. Helland",
+    "description": "© Copyright:Music composed/arranged by Peder B. Helland Footage/photos licensed from:• Videoblocks: Various artists"
+  }
+]

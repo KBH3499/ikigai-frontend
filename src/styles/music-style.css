@@ -1,0 +1,281 @@
+/* General styling */
+.playlist {
+  max-width: 500px;
+  margin: 20px auto;
+  background-color: transparent;
+  /* border: 2px solid rgb(97, 92, 92);
+  border-radius: 5px; */
+  padding: 20px;
+  color: #333;
+  font-family: ChelseaMarket-Regular;
+}
+
+/* Playlist title */
+.playlist-title {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  color: #007ba7;
+}
+
+/* Playlist items */
+.playlist-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.playlist-item {
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: transparent;
+  border-radius: 5px;
+  border: 1px solid #000000;
+  transition: background-color 0.3s;
+}
+
+/* Track info */
+.track-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-title {
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.track-artist {
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* Playlist controls */
+.playlist-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+}
+
+/* General button styles */
+.control-btn {
+  background: #007ba7;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific buttons */
+.prev-btn, .next-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1em;
+}
+
+/* Play button */
+.play-btn {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  color: rgb(2, 2, 2);
+  border-color: yellow !important;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 1.5em;
+  padding: 0;
+  background: #00b8c4;
+  box-shadow: 4px 4px 15px rgba(212, 240, 3, 0.2);
+  transition: box-shadow 0.3s ease;
+}
+
+.play-btn:hover {
+  box-shadow: 6px 6px 20px rgba(208, 222, 2, 0.3);
+}
+
+/* Hover effects */
+.control-btn:hover {
+  background: #005f73;
+  transform: scale(1.1);
+}
+
+/* Active state */
+.control-btn:active {
+  transform: scale(0.95);
+  box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.center_div {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.center_div_mobile {
+  position: absolute !important;
+  top: 60px !important;
+  left: 10px !important;
+}
+
+.music_page_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.music-item {
+  margin: 10%;
+}
+
+.description {
+  font-family: ChelseaMarket-Regular;
+}
+
+@media (max-width: 1400px) {
+
+  .music-item {
+    margin: 5%; /* Adjust margin for smaller screens */
+  }
+}
+/* Responsive styles */
+@media (max-width: 860px) {
+  .playlist {
+    width: 90%; /* Adjust the width */
+    padding: 15px;
+    margin:5px;
+  }
+
+  .playlist-title {
+    font-size: 0.5em;
+  }
+
+  .playlist-item {
+    padding: 5px 6px;
+    font-size: 0.45em;
+  }
+
+  .track-title {
+    font-size: 0.45em;
+  }
+
+  .track-artist {
+    font-size: 0.4em;
+  }
+
+  .playlist-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .control-btn {
+    padding: 5px 5px;
+    font-size: 0.45em;
+  }
+
+  .play-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1em;
+  }
+
+  .music-item {
+    margin: 5%; /* Adjust margin for smaller screens */
+  }
+}
+
+@media (max-width: 760px) {
+  .playlist {
+    padding: 2px;
+  }
+
+  .playlist-title {
+    font-size: 0.4em;
+  }
+
+  .playlist-item {
+    padding: 2px 3px;
+    font-size: 0.3em;
+  }
+
+  .track-title {
+    font-size: 0.3em;
+  }
+
+  .track-artist {
+    font-size: 0.4em;
+  }
+
+  .control-btn {
+    padding: 3px 4px;
+    font-size: 0.3em;
+  }
+
+  .play-btn {
+    width: 25px;
+    height: 25px;
+    font-size: 0.5em;
+  }
+
+  .music-item {
+    margin: 2%; /* Adjust margin for extra small screens */
+  }
+}
+
+
+@media (max-width: 600px) {
+  .playlist {
+    padding: 1px;
+  }
+
+  .playlist-title {
+    font-size: 0.2em;
+  }
+
+  .playlist-item {
+    padding: 1px 1.5px;
+    font-size: 0.15em;
+  }
+
+  .track-title {
+    font-size: 0.15em;
+  }
+
+  .track-artist {
+    font-size: 0.2em;
+  }
+
+  .control-btn {
+    padding: 1px 2px;
+    font-size: 0.2em;
+  }
+
+  .play-btn {
+    width: 15px;
+    height: 15px;
+    font-size: 0.5em;
+  }
+
+  .prev-btn, .next-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.3em;
+  }
+
+  .music-item {
+    margin: 2%; /* Adjust margin for extra small screens */
+  }
+}
+
+.dark-mode-color {
+  background-color:#4868ad;
+}

@@ -1,0 +1,430 @@
+.stake_main_font_style {
+  font-family: ChelseaMarket-Regular;
+}
+.stake_flex_align_center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stake_main_title_content {
+  font-size: 15px;
+}
+.stake_border {
+  border: 2px solid black;
+}
+.stake_element1 {
+  padding: 5px;
+  height: calc(100% - 20px);
+  width: calc(100% - 20px);
+}
+.stake_flex_vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  overflow-y: auto;
+}
+.stake_wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+.stake_pool_element {
+  border: 2px solid black;
+  background-color: #fce4cf;
+  width: 85px;
+  height: 58px;
+  padding: 2px;
+  margin: 3px;
+}
+.stake_pool_ticket {
+  display: none;
+}
+.stake_pool_element:hover .stake_pool_ticket {
+  display: block;
+}
+.stake_pool_element:hover {
+  border: 2px solid #00b8c4;
+}
+
+.stake_unstake1_bg {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.842);
+  font-family: "ChelseaMarket-Regular";
+}
+.stake_unstake1_comp {
+  height: 60%;
+  width: 80%;
+  border: 2px solid black;
+  background-color: white;
+}
+.stake_close_button {
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  border-radius: 35px;
+  background-color: #00b8c4;
+  box-shadow: rgb(0, 0, 0) 0px 3px 0px;
+  transition: box-shadow 0.5s ease;
+}
+
+.stake_close_button:hover {
+  box-shadow: rgb(0, 0, 0) 0px 0px 0px;
+}
+.stake_unstake1_button {
+  width: 90%;
+  height: 30px;
+  margin: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  border-radius: 20px;
+  background-color: #00b8c4;
+  box-shadow: rgb(0, 0, 0) 0px 3px 0px;
+  transition: box-shadow 0.5s ease;
+}
+.stake_unstake1_button:hover {
+  box-shadow: rgb(0, 0, 0) 0px 0px 0px;
+}
+.stake_unstake1_layout {
+  height: calc(100% - 55px);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+.stake_unstake_amount {
+  width: calc(100% - 10px);
+  height: 40px;
+  border: 2px solid black;
+}
+.stake_stake {
+  display: block;
+}
+.stake_unstake {
+  display: block;
+}
+.stake_stake_amount {
+  width: calc(100% - 10px);
+  height: 40px;
+  border: 2px solid black;
+}
+.stake_stake_auto_compounding_select {
+  height: 40px;
+  border: 2px solid #018790;
+  box-shadow: rgb(0, 0, 0) 0px 5px 5px;
+}
+.stake_phantom_wallet_select {
+  height: 40px;
+  border: 4px solid #018790;
+  box-shadow: #018790 0px 5px 5px;
+}
+.stake_current_info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  border: 2px solid #018790;
+  background-color: #ffce2f;
+  padding: 10px;
+}
+.stake_display_flex_center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.stake_pending_reward {
+  width: calc(100% - 14px);
+  padding: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.stake_complete_reward {
+  width: 190px;
+  padding: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.stake_states {
+  height: calc(100% - 80px);
+}
+.stake_transaction_history {
+  height: 100px;
+  border: 2px solid black;
+}
+.stake_transaction_state {
+  display: flex;
+  height: 80px;
+  border: 2px solid black;
+  width: calc(100% - 20px);
+}
+.stake_wallet_state {
+  display: flex;
+  height: 80px;
+  border: 2px solid black;
+  width: calc(100% - 20px);
+}
+.stake-aws-btn {
+  --button-default-height: 30px !important;
+  --button-default-font-size: 14px !important;
+  --button-default-border-radius: 25px !important;
+  --button-horizontal-padding: 3px !important;
+  --button-raise-level: 2px !important;
+  --button-hover-pressure: 3 !important;
+  --transform-speed: 0.15s !important;
+  --button-primary-color: #00b8c4 !important;
+  --button-primary-color-dark: #000000 !important;
+  --button-primary-color-light: #080808 !important;
+  --button-primary-color-hover: #17b7ba !important;
+  --button-primary-color-active: #84a9a9 !important;
+  --button-primary-border: 2px solid #000000 !important;
+  --button-secondary-color: #ffffff !important;
+  --button-secondary-color-dark: #2a2b2c !important;
+  --button-secondary-color-light: #000000 !important;
+  --button-secondary-color-hover: #93a2ae !important;
+  --button-secondary-color-active: #cfdee9 !important;
+  --button-secondary-border: 2px solid #000000 !important;
+  --button-anchor-color: #0e4f88 !important;
+  --button-anchor-color-dark: #072743 !important;
+  --button-anchor-color-light: #ffffff !important;
+  --button-anchor-color-hover: #0d4a7f !important;
+  --button-anchor-color-active: #0c4271 !important;
+  --button-anchor-border: none !important;
+  --button-danger-color: #c42e2e !important;
+  --button-danger-color-dark: #861f1f !important;
+  --button-danger-color-light: #ffffff !important;
+  --button-danger-color-hover: #bc2c2c !important;
+  --button-danger-color-active: #af2929 !important;
+  --button-danger-border: none !important;
+}
+.stake-aws-btn2 {
+  --button-default-height: 50px !important;
+  --button-default-font-size: 14px !important;
+  --button-default-border-radius: 25px !important;
+  --button-horizontal-padding: 10px !important;
+  --button-raise-level: 2px !important;
+  --button-hover-pressure: 1 !important;
+  --transform-speed: 0.15s !important;
+  --button-primary-color: #00b8c4 !important;
+  --button-primary-color-dark: #000000 !important;
+  --button-primary-color-light: #080808 !important;
+  --button-primary-color-hover: #17b7ba !important;
+  --button-primary-color-active: #84a9a9 !important;
+  --button-primary-border: 2px solid #000000 !important;
+  --button-secondary-color: #ffffff !important;
+  --button-secondary-color-dark: #2a2b2c !important;
+  --button-secondary-color-light: #000000 !important;
+  --button-secondary-color-hover: #93a2ae !important;
+  --button-secondary-color-active: #cfdee9 !important;
+  --button-secondary-border: 2px solid #000000 !important;
+  --button-anchor-color: #0e4f88 !important;
+  --button-anchor-color-dark: #072743 !important;
+  --button-anchor-color-light: #ffffff !important;
+  --button-anchor-color-hover: #0d4a7f !important;
+  --button-anchor-color-active: #0c4271 !important;
+  --button-anchor-border: none !important;
+  --button-danger-color: #c42e2e !important;
+  --button-danger-color-dark: #861f1f !important;
+  --button-danger-color-light: #ffffff !important;
+  --button-danger-color-hover: #bc2c2c !important;
+  --button-danger-color-active: #af2929 !important;
+  --button-danger-border: none !important;
+}
+.stake-aws-btn3 {
+  --button-default-height: 40px !important;
+  --button-default-font-size: 14px !important;
+  --button-default-border-radius: 25px !important;
+  --button-horizontal-padding: 30px !important;
+  --button-raise-level: 2px !important;
+  --button-hover-pressure: 3 !important;
+  --transform-speed: 0.15s !important;
+  --button-primary-color: #00b8c4 !important;
+  --button-primary-color-dark: #000000 !important;
+  --button-primary-color-light: #080808 !important;
+  --button-primary-color-hover: #17b7ba !important;
+  --button-primary-color-active: #84a9a9 !important;
+  --button-primary-border: 2px solid #000000 !important;
+  --button-secondary-color: #ffffff !important;
+  --button-secondary-color-dark: #2a2b2c !important;
+  --button-secondary-color-light: #000000 !important;
+  --button-secondary-color-hover: #93a2ae !important;
+  --button-secondary-color-active: #cfdee9 !important;
+  --button-secondary-border: 2px solid #000000 !important;
+  --button-anchor-color: #0e4f88 !important;
+  --button-anchor-color-dark: #072743 !important;
+  --button-anchor-color-light: #ffffff !important;
+  --button-anchor-color-hover: #0d4a7f !important;
+  --button-anchor-color-active: #0c4271 !important;
+  --button-anchor-border: none !important;
+  --button-danger-color: #c42e2e !important;
+  --button-danger-color-dark: #861f1f !important;
+  --button-danger-color-light: #ffffff !important;
+  --button-danger-color-hover: #bc2c2c !important;
+  --button-danger-color-active: #af2929 !important;
+  --button-danger-border: none !important;
+}
+@media (max-width: 1100px) {
+  .stake_main_title_content {
+    display: none;
+  }
+}
+
+/* Stake Container */
+.stake-container {
+  display: flex;
+  justify-content: space-evenly; /* Distribute stake-boxes evenly */
+  flex-wrap: wrap; /* Ensure responsiveness */
+  width: 100%;
+  margin-top: 10px;
+  font-family: "ChelseaMarket-Regular", sans-serif;
+  padding: 10px 0; /* Add some padding at the top and bottom */
+}
+
+/* Stake Box */
+.stake-box {
+  flex: 1; /* Make boxes equal width */
+  max-width: 110px; /* Optional: Limit the max width for larger screens */
+  margin: 0 10px; /* Add spacing between boxes */
+  max-height: 90px;
+  text-align: center;
+  border: 2px solid #100f0f;
+  padding: 5px;
+  display: flex;
+  flex-direction: column; /* Arrange content vertically */
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Stake Header */
+.stake-header {
+  display: flex;
+  justify-content: space-between; /* Align staking ratio and inner-box in the same row */
+  width: 100%;
+}
+
+/* Fonts and Text */
+.staking-font {
+  font-size: 8px;
+  font-weight: bold;
+  padding: 0;
+}
+
+.stacking-percentage {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.stacking-font-light {
+  font-size: 10px;
+  color: #8c8b8b;
+  margin-bottom: 10px; /* Space below */
+  padding:2px;
+}
+
+/* Inner Box */
+.inner-box {
+  display: inline-block;
+  background-color: lightgrey;
+  justify-content: center; /* Horizontally centers the content */
+  border: 2px solid rgb(144, 209, 230);
+  text-align: center;
+  align-items: center;
+  line-height: 30px;
+  font-size: 10px;
+}
+
+/* Drag Line Container */
+.drag-line-container {
+  width: 100%;
+}
+
+/* Horizontal Line */
+.horizontal-line {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background-color: #ccc;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+/* Selected Line */
+.selected-line {
+  position: absolute;
+  height: 100%;
+  background-color: #00b8c4;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Cursor */
+.cursor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #00b8c4;
+  border-radius: 50%;
+  top: -3px;
+  transform: translate(-50%, 0);
+  pointer-events: none;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .stake-box {
+    max-width: 100%; /* Make boxes take full width */
+    margin: 10px 0; /* Add spacing vertically */
+  }
+}
+
+
+
+.container-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+.container-box {
+  position: relative;
+  justify-content: column;
+}
+
+
+
+.stake_approval {
+  height: 70px;
+  font-family: 'Architects Daughter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 9px;
+}
+
+
+.box {
+  display: inline-block;
+  width: 5px;
+ height: 5px;
+background-color: black;
+transform: rotate(30deg);
+margin-right: 5px;
+}
+
