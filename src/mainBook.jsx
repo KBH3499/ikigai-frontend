@@ -17,7 +17,6 @@ import { useDarkMode } from "./provider/theme-provider";
 // import BlankPageRight from "./pages/blackPageRight";
 // import ComicBlankRight from "./pages/comicBlankRight";
 // import BlankRight from "./pages/blankRight";
-
 const Page1 = React.lazy(() => import("./pages/page1"));
 const Page2 = React.lazy(() => import("./pages/page2"));
 const Page3 = React.lazy(() => import("./pages/page3"));
@@ -221,7 +220,7 @@ const MainBook = () => {
                 useMouseEvents={false}
                 showPageCorners={false}
                 onFlip={(e) => {
-                  // console.log(e);
+                  console.log(e);
                 }}
                 flippingTime={1500}
               >
@@ -286,8 +285,8 @@ const MainBook = () => {
                 <LearningRight />
                 {/* <JumpingLeft />
                 <MerchBlankRight /> */}
-                {/* <StakingPageLeft />
-                <StakingPageRight /> */}
+                <StakingPageLeft />
+                <StakingPageRight />
                 <MusicPageLeft />
                 <MusicPageRight isMobile={isMobile} />
               </HTMLFlipBook>

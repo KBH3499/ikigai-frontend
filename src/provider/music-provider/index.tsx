@@ -38,15 +38,15 @@ export const MusicPlayerProvider = ({ children }) => {
       // Update the audio source
       audio.src = `${basePath}/${musicList[songIndex]?.audioSrc}`;
       audio.load(); // Load the new audio source
-  
+
       // Automatically play only if isMusicPlaying is true
       if (isMusicPlaying) {
         audio.play();
       }
-  
+
       // Add event listener for when the song ends
       audio.addEventListener("ended", handleSongEnd);
-  
+
       // Clean up the event listener when the component unmounts or songIndex changes
       return () => {
         audio.pause(); // Pause the audio when cleaning up
@@ -54,7 +54,7 @@ export const MusicPlayerProvider = ({ children }) => {
       };
     }
   }, [songIndex, basePath, isMusicPlaying]);
-  
+
 
   return (
     <MusicPlayerContext.Provider
