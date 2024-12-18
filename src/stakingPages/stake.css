@@ -143,6 +143,16 @@
   background-color: #ffce2f;
   padding: 10px;
 }
+.token_info {
+  display: flex;
+  gap:30px;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 2px solid #018790;
+  background-color: #ffce2f;
+  padding: 10px;
+}
 .stake_display_flex_center {
   display: flex;
   justify-content: center;
