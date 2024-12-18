@@ -1310,7 +1310,7 @@ code {
   position: absolute;
   right: -75px;
   top: 190px;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 @media (max-width: 1400px){
@@ -1327,7 +1327,7 @@ code {
     position: absolute;
     right: -63px;
     top: 130px;
-    pointer-events: none; 
+    pointer-events: none;
   }
 
   .navbar {

@@ -220,7 +220,7 @@ const MainBook = () => {
                 useMouseEvents={false}
                 showPageCorners={false}
                 onFlip={(e) => {
-                  // console.log(e);
+                  console.log(e);
                 }}
                 flippingTime={1500}
               >
@@ -285,8 +285,8 @@ const MainBook = () => {
                 <LearningRight />
                 {/* <JumpingLeft />
                 <MerchBlankRight /> */}
-                {/* <StakingPageLeft />
-                <StakingPageRight /> */}
+                <StakingPageLeft />
+                <StakingPageRight />
                 <MusicPageLeft />
                 <MusicPageRight isMobile={isMobile} />
               </HTMLFlipBook>

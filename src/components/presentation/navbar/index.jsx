@@ -30,12 +30,13 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav }) => {
           style={{
             height: "100%",
             width: `${!isShrinkNav ? "100%" : "68%"}`,
-            margin: "auto",
+            margin: isShrinkNav ? "auto" : "",
+            marginLeft: 40,
             justifyContent: isShrinkNav ? "space-between" : "center ",
           }}
         >
           {!isShrinkNav && (
-            <div bis_skin_checked="1" style={{ position: "absolute", top: "0", left: "0", width: "250px", height: "80px" }}>
+            <div bis_skin_checked="1" style={{ position: "absolute", top: "5px", left: "0", width: "250px", height: "80px" }}>
               <img width="250" height="80" src="../../../../assets/Header-for-Website-Darker.gif" />
             </div>
 
@@ -299,7 +300,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav }) => {
                       paddingLeft: "2px",
                     }}
                     onPress={() => {
-                      flipBook.current.pageFlip().flip(57, "top");
+                      flipBook.current.pageFlip().flip(56, "top");
                       if (isShrinkNav) {
                         toggleMenu();
                       }
@@ -368,26 +369,6 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav }) => {
                     </a>
                   </AwesomeButton>
 
-                  {/* <AwesomeButton
-                    className="nav_button_padding"
-                    type={buttonType}
-                    style={{
-                      fontFamily: "KaoriGelBold",
-                      paddingRight: "2px",
-                      paddingLeft: "2px",
-                    }}
-                    onPress={() => {
-                      flipBook.current.pageFlip().flip(60, "top");
-                      if (isShrinkNav) {
-                        toggleMenu();
-                      }
-                    }}
-                  >
-                     <span style={{color:"yellow"}}>
-                    Stacking
-                    </span>
-                  </AwesomeButton> */}
-
                   <AwesomeButton
                     className="nav_button_padding"
                     type={buttonType}
@@ -398,6 +379,26 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav }) => {
                     }}
                     onPress={() => {
                       flipBook.current.pageFlip().flip(58, "top");
+                      if (isShrinkNav) {
+                        toggleMenu();
+                      }
+                    }}
+                  >
+                     <span style={{color:"yellow"}}>
+                    Staking
+                    </span>
+                  </AwesomeButton>
+
+                  <AwesomeButton
+                    className="nav_button_padding"
+                    type={buttonType}
+                    style={{
+                      fontFamily: "KaoriGelBold",
+                      paddingRight: "2px",
+                      paddingLeft: "2px",
+                    }}
+                    onPress={() => {
+                      flipBook.current.pageFlip().flip(60, "top");
                       if (isShrinkNav) {
                         toggleMenu();
                       }

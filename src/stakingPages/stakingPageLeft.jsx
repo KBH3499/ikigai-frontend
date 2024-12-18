@@ -1,20 +1,75 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import React from "react";
 import { AwesomeButton } from "react-awesome-button";
 import "react-awesome-button/dist/styles.css";
 import "react-awesome-button/dist/themes/theme-blue.css";
-import { FaLandMineOn } from "react-icons/fa6";
 import { useWalletConnect } from "../provider/staking-provider";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletReadyState } from "@solana/wallet-adapter-base";
+
 const StakingPageLeft = React.forwardRef((props, ref) => {
   const [percentage, setPercentage] = useState(0); // Tracks the percentage dragged
+  const [isDisConnecting, setIsDisConnecting] = useState(false);
   const lineRef = useRef(null); // Reference to the line
-  const { isWalletConnectVisible,
+  const {
+    isWalletConnectVisible,
     openWalletConnect,
     closeWalletConnect,
     isWalletConnectConfirming,
     openWalletConnectConfirming,
-    closeWalletConnectConfirming,isWalletConnected,connectedWallet,setIsWalletConnected}=useWalletConnect();
- 
+    closeWalletConnectConfirming,
+    isWalletConnected,
+    connectedWallet,
+    setIsWalletConnected,
+  } = useWalletConnect();
+
+  const {
+    connected,
+    publicKey,
+    connect,
+    disconnect,
+    connecting,
+    select,
+    wallets,
+  } = useWallet();
+
+  const handleConnect = async () => {
+    try {
+
+      const phantomWallet = wallets.find(
+        (wallet) => wallet.adapter.name === "Phantom",
+      );
+      if (!phantomWallet) {
+        alert("Phantom wallet not available. Please install Phantom.");
+        return;
+      }
+
+      if (
+        phantomWallet.readyState !== WalletReadyState.Installed &&
+        phantomWallet.readyState !== WalletReadyState.Loadable
+      ) {
+        alert(
+          "Phantom wallet is not ready. Please ensure it is installed and active.",
+        );
+        return;
+      }
+
+      select(phantomWallet.adapter.name);
+      console.log(2222222);
+      await connect();
+
+    } catch (error) {
+
+      console.error("Wallet connection failed:", error.message);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    setIsDisConnecting(true);
+    await disconnect();
+    setIsWalletConnected(false);
+    setIsDisConnecting(false);
+  };
 
   const handleDrag = (e) => {
     const line = lineRef.current.getBoundingClientRect(); // Get line's dimensions
@@ -25,6 +80,14 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
     newPercentage = Math.max(0, Math.min(newPercentage, 100));
     setPercentage(newPercentage);
   };
+
+  useEffect(() => {
+    if (connected) {
+      setIsWalletConnected(true);
+      closeWalletConnect();
+    }
+  }, [connected]);
+
   return (
     <div
       className="demoPage comic_background_white_left"
@@ -48,9 +111,10 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
               <h1 style={{ margin: "0" }}>STAKING</h1>
               <span className="stake_main_title_content">
                 {" "}
-                Our content is designed to educate the 500,000+ crypto earning
-                investors who use the CoinLedger platform. Though our and form
-                are for informational purposes.
+                Our content is designed to educate the 500,000+
+                crypto earning investors who use the CoinLedger
+                platform. Though our and form are for
+                informational purposes.
               </span>
             </div>
           </div>
@@ -69,12 +133,20 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
             />
           </div>
         </div>
-        <div className="stake_border" style={{ height: "40%", width: "100%" }}>
-          <div className="stake_element1" style={{ overflowY: "auto" }}>
+        <div
+          className="stake_border"
+          style={{ height: "40%", width: "100%" }}
+        >
+          <div
+            className="stake_element1"
+            style={{ overflowY: "auto" }}
+          >
             <div className=" stake_main_font_style stake_wrap stake_flex_align_center">
               <div className="stake_flex_align_center">
                 <div>
-                  <span style={{ fontSize: "30px" }}>STAKEikigai</span>
+                  <span style={{ fontSize: "30px" }}>
+                    STAKEikigai
+                  </span>
                 </div>
                 <div
                   style={{
@@ -156,7 +228,9 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                         fill="black"
                       />
                     </svg>
-                    <span className="stake_main_font_style">SHARE</span>
+                    <span className="stake_main_font_style">
+                      SHARE
+                    </span>
                   </AwesomeButton>
                 </div>
               </div>
@@ -170,7 +244,10 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
               <div>
                 <span
                   className="stake_main_font_style"
-                  style={{ textAlign: "start", fontSize: "12px" }}
+                  style={{
+                    textAlign: "start",
+                    fontSize: "12px",
+                  }}
                 >
                   Current Reward Balance IKIGAI
                 </span>
@@ -189,14 +266,17 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                 <div>
                   <span
                     className="stake_main_font_style"
-                    style={{ fontSize: "14px", color: "#018790" }}
+                    style={{
+                      fontSize: "14px",
+                      color: "#018790",
+                    }}
                   >
                     20.33$
                   </span>
                 </div>
               </div>
 
-              <div style={{ display: "flex" }}>
+              {isWalletConnected && <div style={{ display: "flex" }}>
                 <div style={{ paddingLeft: "10px" }}>
                   <AwesomeButton
                     className="stake-aws-btn"
@@ -210,7 +290,9 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       console.log("invite friends");
                     }}
                   >
-                    <span className="stake_main_font_style">UPGRADE</span>
+                    <span className="stake_main_font_style">
+                      UPGRADE
+                    </span>
                   </AwesomeButton>
                 </div>
                 <div style={{ paddingLeft: "10px" }}>
@@ -226,7 +308,9 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       console.log("invite friends");
                     }}
                   >
-                    <span className="stake_main_font_style">UNSTAKE</span>
+                    <span className="stake_main_font_style">
+                      UNSTAKE
+                    </span>
                   </AwesomeButton>
                 </div>
                 <div style={{ paddingLeft: "10px" }}>
@@ -242,10 +326,12 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       console.log("invite friends");
                     }}
                   >
-                    <span className="stake_main_font_style">RESTAKE</span>
+                    <span className="stake_main_font_style">
+                      RESTAKE
+                    </span>
                   </AwesomeButton>
                 </div>
-              </div>
+              </div>}
             </div>
             <div
               className="stake_flex_align_center"
@@ -261,19 +347,22 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     height: "auto",
                   }}
                   onPress={() => {
-                    if(!isWalletConnected)
-                    {
-                    openWalletConnect();
-                    }
-                    else{
+                    if (!isWalletConnected) {
+                      openWalletConnect();
+                    } else {
                       console.log("hres");
-                      setIsWalletConnected(false);
+                      handleDisconnect();
                     }
                     console.log("invite friends");
                   }}
+                  disabled={isDisConnecting}
                 >
                   <span className="stake_main_font_style">
-                    {isWalletConnected ? "DISCONNECT WALLET" : "CONNECT WALLET TO START STAKING"}
+                    {isWalletConnected
+                      ? isDisConnecting
+                        ? "Disconnecting...."
+                        : "DISCONNECT WALLET"
+                      : "CONNECT WALLET TO START STAKING"}
                   </span>
                 </AwesomeButton>
               </div>
@@ -281,271 +370,427 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
           </div>
         </div>
         {isWalletConnected && (
-       <>
-    <div style={{ height: "5%", width: "100%", justifyContent: "start" }} className="stake_flex_align_center">
-      <div style={{ paddingTop: "10px" }}>
-        <span className="stake_main_font_style">POTENTIAL EARNINGS</span>
-      </div>
-    </div>
-    <div className="stake-container">
-      <div className="stake-box">
-        <div className="stake-header">
-          <span className="staking-font">STAKING RATIO</span>
-          <div className="inner-box">
-            <span>24HRS</span>
-          </div>
-        </div>
-        <div className="stacking-percentage">{Math.round(percentage)}%</div>
-        <div className="drag-line-container">
-          <div
-            className="horizontal-line"
-            ref={lineRef}
-            onMouseMove={(e) => e.buttons === 1 && handleDrag(e)}
-            onClick={handleDrag}
-          >
-            <div className="cursor" style={{ left: `${percentage}%` }}></div>
-            <div className="selected-line" style={{ width: `${percentage}%` }}></div>
-          </div>
-        </div>
-      </div>
-
-      <div className="stake-box">
-        <div className="stake-header">
-          <span className="staking-font">STAKING REWARD</span>
-          <div className="inner-box">
-            <span>24HRS</span>
-          </div>
-        </div>
-        <div className="stacking-percentage">70.40%</div>
-        <div className="stacking-font-light">CURRENT REWARD BALANCE</div>
-      </div>
-
-      <div className="stake-box">
-        <div className="stake-header">
-          <span className="staking-font">DAILY CASHOUT</span>
-          <div className="inner-box">
-            <span>24HRS</span>
-          </div>
-        </div>
-        <div className="stacking-percentage">70.40%</div>
-        <div className="stacking-font-light">CURRENT REWARD BALANCE</div>
-      </div>
-    </div>
-
-  </>
-)}
-
-{!isWalletConnected && (
-  <>
-   <div className="stake_main_font_style" style={{ textAlign: "start", fontSize:'20px', marginTop:"10px" }}>
-          <div>
-            <span>Lottery Tickets</span>
-          </div>
-          </div>
-    <div className="stake_border stake_element1" style={{ height: "15%", overflowY: "auto" }}>
-      <div style={{ height: "30%" }} className="stake_flex_align_center">
-        <div className="stake_main_font_style" style={{ justifyContent: "start" }}>
-          <span>USER: </span>
-          <span>mark34</span>
-        </div>
-      </div>
-      <div className="stake_flex_align_center" style={{ height: "70%", justifyContent: "space-between" }}>
-        <div className="stake_main_font_style" style={{ textAlign: "start" }}>
-          <div>
-            <span>Lottery tickets earned</span>
-          </div>
-          <div style={{ fontSize: "30px" }}>
-            <span>0 </span>
-            <span>lottery tickets</span>
-          </div>
-        </div>
-        <div style={{ paddingRight: "10px" }}>
-          <AwesomeButton
-            className="stake-aws-btn3"
-            type="secondary"
-            style={{
-              fontSize: "16px",
-              fontFamily: "KaoriGelBold",
-              padding: 0,
-            }}
-            onPress={() => {
-              console.log("invite friends");
-            }}
-          >
-            <span className="stake_main_font_style">BET</span>
-          </AwesomeButton>
-        </div>
-      </div>
-    </div>
-  </>
-)}
-
-{/* Wallet Connect Component */}
-{isWalletConnectVisible && (
-  <div className="stake_stake">
-    <div className="stake_unstake1_bg">
-      <div className="stake_unstake1_comp">
-        <div style={{ display: "flex", flexDirection: "row-reverse", height: "45px" }}>
-          <button className="stake_close_button" onClick={closeWalletConnect}>×</button>
-        </div>
-        <div className="stake_unstake1_layout">
-          <div style={{ marginBottom: "20px" }}>
-            <span style={{ fontSize: "20px" }}>Connect Wallet</span>
-          </div>
-          <div className="stake_wallet_state" style={{ marginBottom: "20px" }}>
-            <div style={{ height: "100%", boxSizing: "border-box" }}>
-              <img alt="" src="/assets/staking/dfe9730f62f014b284d1e9197277cf00.png" style={{ height: "60px",paddingTop:"10px" }} />
+          <>
+            <div
+              style={{
+                height: "5%",
+                width: "100%",
+                justifyContent: "start",
+              }}
+              className="stake_flex_align_center"
+            >
+              <div style={{ paddingTop: "10px" }}>
+                <span className="stake_main_font_style">
+                  POTENTIAL EARNINGS
+                </span>
+              </div>
             </div>
-            <div style={{ textAlign: "start", padding: "10px" }}>
-              <span style={{ fontSize: "10px" }}>
-                By connecting your wallet, you acknowledge that you have read, understand, and accept the terms in the disclaimer
-              </span>
-            </div>
-          </div>
-          <div style={{ width: "100%", marginBottom: "20px" }}>
-            <div className="stake_phantom_wallet_select" style={{ margin: "20px", padding: "5px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%" }}>
-                <div style={{ height: "100%", display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ height: "100%" }}>
-                    <img alt="" src="/assets/staking/pngaaa.com-6547356 1.png" style={{ height: "80%" }} />
+            <div className="stake-container">
+              <div className="stake-box">
+                <div className="stake-header">
+                  <span className="staking-font">
+                    STAKING RATIO
+                  </span>
+                  <div className="inner-box">
+                    <span>24HRS</span>
                   </div>
-                  <span>Phantom Wallet</span>
                 </div>
-                <div>
-                  <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />
+                <div className="stacking-percentage">
+                  {Math.round(percentage)}%
+                </div>
+                <div className="drag-line-container">
+                  <div
+                    className="horizontal-line"
+                    ref={lineRef}
+                    onMouseMove={(e) =>
+                      e.buttons === 1 && handleDrag(e)
+                    }
+                    onClick={handleDrag}
+                  >
+                    <div
+                      className="cursor"
+                      style={{ left: `${percentage}%` }}
+                    ></div>
+                    <div
+                      className="selected-line"
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stake-box">
+                <div className="stake-header">
+                  <span className="staking-font">
+                    STAKING REWARD
+                  </span>
+                  <div className="inner-box">
+                    <span>24HRS</span>
+                  </div>
+                </div>
+                <div className="stacking-percentage">
+                  70.40%
+                </div>
+                <div className="stacking-font-light">
+                  CURRENT REWARD BALANCE
+                </div>
+              </div>
+
+              <div className="stake-box">
+                <div className="stake-header">
+                  <span className="staking-font">
+                    DAILY CASHOUT
+                  </span>
+                  <div className="inner-box">
+                    <span>24HRS</span>
+                  </div>
+                </div>
+                <div className="stacking-percentage">
+                  70.40%
+                </div>
+                <div className="stacking-font-light">
+                  CURRENT REWARD BALANCE
                 </div>
               </div>
             </div>
-          </div>
-          <div style={{ paddingRight: "10px", width: "80%" }}>
-            <AwesomeButton
-              className="stake-aws-btn3"
-              type="primary"
+          </>
+        )}
+
+        {!isWalletConnected && (
+          <>
+            <div
+              className="stake_main_font_style"
               style={{
-                width: "100%",
-                fontSize: "16px",
-                fontFamily: "KaoriGelBold",
-                padding: 0,
-              }}
-              onPress={() => {
-                closeWalletConnect();
-                openWalletConnectConfirming();
-                connectedWallet();
-                console.log("approve button clicked");
+                textAlign: "start",
+                fontSize: "20px",
+                marginTop: "10px",
               }}
             >
-              <span className="stake_main_font_style">APPROVE</span>
-            </AwesomeButton>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-</div>
-</div>)
-  });
-      {/* /////////////////////////////////////////////////// */}
-      {/* /////////////////////////////////////////// Wallet connect confirm component */}
-      {/* {isWalletConnectConfirming && (
-        <div className="stake_unstake">
-          <div className="stake_unstake1_bg">
+              <div>
+                <span>Lottery Tickets</span>
+              </div>
+            </div>
             <div
-              className="stake_unstake1_comp"
-              style={{
-                flexDirection: "column",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                overflowY: "auto",
-              }}
+              className="stake_border stake_element1"
+              style={{ height: "15%", overflowY: "auto" }}
             >
               <div
+                style={{ height: "30%" }}
+                className="stake_flex_align_center"
+              >
+                <div
+                  className="stake_main_font_style"
+                  style={{ justifyContent: "start" }}
+                >
+                  <span>USER: </span>
+                  <span>mark34</span>
+                </div>
+              </div>
+              <div
+                className="stake_flex_align_center"
                 style={{
-                  marginTop: "20px",
-                  border: "2px solid #000000",
-                  borderRadius: "50%",
-                  height: "40px",
-                  width: "40px",
-                  backgroundColor: "#05FF7E",
-                  textAlign: "center",
-                  fontSize: "30px",
+                  height: "70%",
+                  justifyContent: "space-between",
                 }}
               >
-                <svg
-                  width="24"
-                  height="21"
-                  viewBox="0 0 24 21"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1.75911 10.1941L2.43564 10.9305L1.7591 10.1941C0.821036 11.0559 0.743512 12.5213 1.57611 13.4808L2.3314 12.8254L1.57611 13.4808L6.54504 19.2071C6.97891 19.7071 7.60657 20 8.27329 20C8.94002 20 9.56768 19.7071 10.0015 19.2072L22.4239 4.89137C23.2565 3.93187 23.179 2.46639 22.2409 1.60458C21.2863 0.727622 19.8143 0.816829 18.9674 1.79286L8.27329 14.117L5.03261 10.3823C4.18567 9.4063 2.71367 9.31709 1.75911 10.1941Z"
-                    fill="white"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div style={{ marginBottom: "20px" }}>
-                <span style={{ fontSize: "20px" }}>CONNECTION SUCCESSFUL</span>
-              </div>
-              <div style={{ width: "100%", marginBottom: "20px" }}>
                 <div
-                  className="stake_phantom_wallet_select"
-                  style={{
-                    margin: "20px",
-                    padding: "5px",
-                  }}
+                  className="stake_main_font_style"
+                  style={{ textAlign: "start" }}
                 >
-                  <div
+                  <div>
+                    <span>Lottery tickets earned</span>
+                  </div>
+                  <div style={{ fontSize: "30px" }}>
+                    <span>0 </span>
+                    <span>lottery tickets</span>
+                  </div>
+                </div>
+                <div style={{ paddingRight: "10px" }}>
+                  <AwesomeButton
+                    className="stake-aws-btn3"
+                    type="secondary"
                     style={{
-                      height: "100%",
-                      display: "flex",
-                      alignItems: "center",
+                      fontSize: "16px",
+                      fontFamily: "KaoriGelBold",
+                      padding: 0,
+                    }}
+                    onPress={() => {
+                      console.log("invite friends");
                     }}
                   >
-                    <div style={{ heigth: "100%" }}>
+                    <span className="stake_main_font_style">
+                      BET
+                    </span>
+                  </AwesomeButton>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Wallet Connect Component */}
+
+        {isWalletConnectVisible && (
+          <div className="stake_stake">
+            <div className="stake_unstake1_bg">
+              <div className="stake_unstake1_comp">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row-reverse",
+                    height: "45px",
+                  }}
+                >
+                  <button
+                    className="stake_close_button"
+                    onClick={() => {
+                      closeWalletConnect();
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="stake_unstake1_layout">
+                  <div style={{ marginBottom: "20px" }}>
+                    <span style={{ fontSize: "20px" }}>
+                      Connect Wallet
+                    </span>
+                  </div>
+                  <div
+                    className="stake_wallet_state"
+                    style={{ marginBottom: "20px" }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        boxSizing: "border-box",
+                      }}
+                    >
                       <img
                         alt=""
-                        src="/assets/staking/pngaaa.com-6547356 1.png"
-                        style={{ height: "80%" }}
+                        src="/assets/staking/dfe9730f62f014b284d1e9197277cf00.png"
+                        style={{
+                          height: "60px",
+                          paddingTop: "10px",
+                        }}
                       />
                     </div>
-
-                    <div>
-                      <span style={{ color: "#018790" }}>CONGRATULATIONS!</span>
-                      <br />
+                    <div
+                      style={{
+                        textAlign: "start",
+                        padding: "10px",
+                      }}
+                    >
                       <span style={{ fontSize: "10px" }}>
-                        Your phantom wallet has been succesfully connected
+                        By connecting your wallet, you
+                        acknowledge that you have read,
+                        understand, and accept the terms
+                        in the disclaimer
                       </span>
                     </div>
                   </div>
+                  <div
+                    style={{
+                      width: "100%",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <div
+                      className="stake_phantom_wallet_select"
+                      style={{
+                        margin: "20px",
+                        padding: "5px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent:
+                            "space-between",
+                          height: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          <div
+                            style={{ height: "100%" }}
+                          >
+                            <img
+                              alt=""
+                              src="/assets/staking/pngaaa.com-6547356 1.png"
+                              style={{
+                                height: "80%",
+                              }}
+                            />
+                          </div>
+                          <span>Phantom Wallet</span>
+                          {/* <WalletMultiButton /> */}
+                        </div>
+                        <div>
+                          <input
+                            type="checkbox"
+                            id="vehicle1"
+                            name="vehicle1"
+                            value="Bike"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      paddingRight: "10px",
+                      width: "80%",
+                    }}
+                  >
+                    <AwesomeButton
+                      className="stake-aws-btn3"
+                      type="primary"
+                      style={{
+                        width: "100%",
+                        fontSize: "16px",
+                        fontFamily: "KaoriGelBold",
+                        padding: 0,
+                      }}
+                      // onPress={() => {
+                      //   closeWalletConnect();
+                      //   openWalletConnectConfirming();
+                      //   connectedWallet();
+                      //   console.log("approve button clicked");
+
+                      // }}
+                      onPress={handleConnect}
+                      disabled={connecting}
+                    >
+                      <span className="stake_main_font_style">
+                        {connecting
+                          ? "Connecting...."
+                          : "APPROVE"}
+                      </span>
+                    </AwesomeButton>
+                  </div>
                 </div>
-              </div>
-              <div style={{ paddingRight: "20px", marginBottom: "20px" }}>
-                <AwesomeButton
-                  className="stake-aws-btn3"
-                  type="primary"
-                  style={{
-                    fontSize: "16px",
-                    fontFamily: "KaoriGelBold",
-                    padding: 0,
-                  }}
-                  onPress={() => {
-                    closeWalletConnectConfirming();
-                    console.log("Go to dashboard button clicked");
-                  }}
-                >
-                  <span className="stake_main_font_style">START STAKING</span>
-                </AwesomeButton>
               </div>
             </div>
           </div>
-        </div>
-      )} */}
+        )}
+      </div>
+    </div>
+  );
+});
+{
+  /* /////////////////////////////////////////////////// */
+}
+{
+  /* /////////////////////////////////////////// Wallet connect confirm component */
+}
+{
+  /* {isWalletConnectConfirming && (
+      <div className="stake_unstake">
+        <div className="stake_unstake1_bg">
+          <div
+            className="stake_unstake1_comp"
+            style={{
+              flexDirection: "column",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflowY: "auto",
+            }}
+          >
+            <div
+              style={{
+                marginTop: "20px",
+                border: "2px solid #000000",
+                borderRadius: "50%",
+                height: "40px",
+                width: "40px",
+                backgroundColor: "#05FF7E",
+                textAlign: "center",
+                fontSize: "30px",
+              }}
+            >
+              <svg
+                width="24"
+                height="21"
+                viewBox="0 0 24 21"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.75911 10.1941L2.43564 10.9305L1.7591 10.1941C0.821036 11.0559 0.743512 12.5213 1.57611 13.4808L2.3314 12.8254L1.57611 13.4808L6.54504 19.2071C6.97891 19.7071 7.60657 20 8.27329 20C8.94002 20 9.56768 19.7071 10.0015 19.2072L22.4239 4.89137C23.2565 3.93187 23.179 2.46639 22.2409 1.60458C21.2863 0.727622 19.8143 0.816829 18.9674 1.79286L8.27329 14.117L5.03261 10.3823C4.18567 9.4063 2.71367 9.31709 1.75911 10.1941Z"
+                  fill="white"
+                  stroke="black"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <span style={{ fontSize: "20px" }}>CONNECTION SUCCESSFUL</span>
+            </div>
+            <div style={{ width: "100%", marginBottom: "20px" }}>
+              <div
+                className="stake_phantom_wallet_select"
+                style={{
+                  margin: "20px",
+                  padding: "5px",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ heigth: "100%" }}>
+                    <img
+                      alt=""
+                      src="/assets/staking/pngaaa.com-6547356 1.png"
+                      style={{ height: "80%" }}
+                    />
+                  </div>
 
+                  <div>
+                    <span style={{ color: "#018790" }}>CONGRATULATIONS!</span>
+                    <br />
+                    <span style={{ fontSize: "10px" }}>
+                      Your phantom wallet has been succesfully connected
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style={{ paddingRight: "20px", marginBottom: "20px" }}>
+              <AwesomeButton
+                className="stake-aws-btn3"
+                type="primary"
+                style={{
+                  fontSize: "16px",
+                  fontFamily: "KaoriGelBold",
+                  padding: 0,
+                }}
+                onPress={() => {
+                  closeWalletConnectConfirming();
+                  console.log("Go to dashboard button clicked");
+                }}
+              >
+                <span className="stake_main_font_style">START STAKING</span>
+              </AwesomeButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    )} */
+}
 
 export default StakingPageLeft;

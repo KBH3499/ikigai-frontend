@@ -15,6 +15,7 @@ import { DarkModeProvider } from "../../provider/theme-provider";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { MusicPlayerProvider } from "../../provider/music-provider";
 import { WalletConnectProvider } from "../../provider/staking-provider";
+import { clusterApiUrl } from "@solana/web3.js";
 
 
 const Context = ({ children }) => {
@@ -22,15 +23,13 @@ const Context = ({ children }) => {
   const network = WalletAdapterNetwork.Devnet;
 
   // You can also provide a custom RPC endpoint.
-  // const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  const endpoint =
-    "https://quiet-flashy-dream.solana-devnet.quiknode.pro/12ecf67b85c5f615f78ab0b3d68d636cf54f679b/";
+  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  // const endpoint =
+  //   "https://quiet-flashy-dream.solana-devnet.quiknode.pro/12ecf67b85c5f615f78ab0b3d68d636cf54f679b/";
 
   const wallets = useMemo(
     () => [
-      new SolflareWalletAdapter(),
       new PhantomWalletAdapter(),
-      new TrustWalletAdapter(),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [network]
@@ -42,7 +41,7 @@ const Context = ({ children }) => {
       <DarkModeProvider>
         <MusicPlayerProvider>
           <WalletConnectProvider>
-            <WalletModalProvider>                        
+            <WalletModalProvider>
               {children}
             </WalletModalProvider>
           </WalletConnectProvider>

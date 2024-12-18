@@ -38,10 +38,17 @@
 .stake_pool_ticket {
   display: none;
 }
+.stake_pool_ticket_show {
+  display: block;
+}
 .stake_pool_element:hover .stake_pool_ticket {
   display: block;
 }
 .stake_pool_element:hover {
+  border: 2px solid #00b8c4;
+}
+
+.selected-pool {
   border: 2px solid #00b8c4;
 }
 
@@ -131,6 +138,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 5px;
+  border: 2px solid #018790;
+  background-color: #ffce2f;
+  padding: 10px;
+}
+.token_info {
+  display: flex;
+  gap:30px;
+  align-items: center;
+  justify-content: center;
   padding: 5px;
   border: 2px solid #018790;
   background-color: #ffce2f;
