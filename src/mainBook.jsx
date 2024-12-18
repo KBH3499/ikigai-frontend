@@ -17,6 +17,7 @@ import { useDarkMode } from "./provider/theme-provider";
 // import BlankPageRight from "./pages/blackPageRight";
 // import ComicBlankRight from "./pages/comicBlankRight";
 // import BlankRight from "./pages/blankRight";
+
 const Page1 = React.lazy(() => import("./pages/page1"));
 const Page2 = React.lazy(() => import("./pages/page2"));
 const Page3 = React.lazy(() => import("./pages/page3"));
