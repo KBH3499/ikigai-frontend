@@ -84,6 +84,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
       secretKey: secretKeyArray,
     };
     const publicAddress = publicKey.toBase58();
+    console.log({publicAddress})
 
   const handleInput = (e) => {
     setStakeAmount(Number(e.target.value));
@@ -157,13 +158,16 @@ const StakingPageRight = React.forwardRef((props, ref) => {
       provider,
     );
     const userWallet = provider.wallet.publicKey;
-    const userStakingWallet = await getOrCreateAssociatedTokenAccount(
-      connection,
-      adminKeyPair,
-      stakingTokenMint,
-      userWallet,
-    );
-    console.log({userStakingWallet:userStakingWallet.owner.toString()})
+    // const userStakingWallet = await getOrCreateAssociatedTokenAccount(
+    //   connection,
+    //   adminKeyPair,
+    //   stakingTokenMint,
+    //   userWallet,
+    // );
+    // console.log({userStakingWallet:userStakingWallet.owner.toString()})
+    const accountInfo = await connection.getAccountInfo(adminKeyPair.publicKey);
+console.log(accountInfo);
+
     const poolData = await program.account.userInfo.fetch(publicKey.toString());
     console.log({poolData})
     console.log({poolData2: {
@@ -220,7 +224,19 @@ const StakingPageRight = React.forwardRef((props, ref) => {
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
       };
-
+      const accounts2 = {
+        user: userWallet.toString(),
+        admin: adminKeyPair.publicKey.toString(),
+        // userInfo: userInfoKeyPair.publicKey,
+        userInfo: publicKey.toString(),
+        userStakingWallet: userStakingWallet.address.toString(),
+        adminStakingWallet: adminTokenAccount.address.toString(),
+        stakingToken: stakingTokenMint.toString(),
+        poolInfo: poolKeyPair.publicKey.toString(),
+        tokenProgram: TOKEN_PROGRAM_ID.toString(),
+        systemProgram: SystemProgram.programId.toString(),
+      };
+      console.log({ accounts, accounts2 });
       const time = new BN(stakeDuration);
       const dynamicValue = `${stakeAmount}e9`;
       const bnAmount = new BN(Number(dynamicValue));
@@ -267,7 +283,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
       const accounts = {
         user: userWallet,
-        // admin: adminKeyPair.publicKey,
+        admin: adminKeyPair.publicKey,
         // userInfo: userInfoKeyPair.publicKey,
         userInfo: publicKey,
         userStakingWallet: userStakingWallet.address,
@@ -296,6 +312,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
       const tx = await program.methods
         .unstake()
         .accounts(accounts)
+        .signers([adminKeyPair])
         .rpc();
 
       console.log("Stake transaction successful:", tx);
