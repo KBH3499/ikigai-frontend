@@ -445,3 +445,32 @@ transform: rotate(30deg);
 margin-right: 5px;
 }
 
+.font{
+  margin: 0;
+}
+
+.ikigai-font{
+  font-size: 30px;
+}
+
+.ikigai-stake-img {
+  height: 70px;
+  width: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .stake_main_title_content{
+    font-size: 10px;
+  }
+  .font{
+    font-size: 24px;
+  }
+  .ikigai-font{
+    font-size: 24px;
+  }
+  .ikigai-stake-img {
+    height: 50px;
+  }
+  
+}

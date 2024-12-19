@@ -108,7 +108,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
             style={{ textAlign: "start", margin: "0", flex: "80%" }}
           >
             <div>
-              <h1 style={{ margin: "0" }}>STAKING</h1>
+              <h1 className="font">STAKING</h1>
               <span className="stake_main_title_content">
                 {" "}
                 Our content is designed to educate the 500,000+
@@ -144,16 +144,11 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
             <div className=" stake_main_font_style stake_wrap stake_flex_align_center">
               <div className="stake_flex_align_center">
                 <div>
-                  <span style={{ fontSize: "30px" }}>
+                  <span className="ikigai-font">
                     STAKEikigai
                   </span>
                 </div>
-                <div
-                  style={{
-                    height: "70px",
-                    width: "auto",
-                    boxSizing: "border-box",
-                  }}
+                <div className="ikigai-stake-img"
                 >
                   <img
                     alt=""
@@ -278,7 +273,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
 
               {isWalletConnected && <div style={{ display: "flex" }}>
                 <div style={{ paddingLeft: "10px" }}>
-                  <AwesomeButton
+                  {/* <AwesomeButton
                     className="stake-aws-btn"
                     type="secondary"
                     style={{
@@ -293,7 +288,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     <span className="stake_main_font_style">
                       UPGRADE
                     </span>
-                  </AwesomeButton>
+                  </AwesomeButton> */}
                 </div>
                 <div style={{ paddingLeft: "10px" }}>
                   <AwesomeButton

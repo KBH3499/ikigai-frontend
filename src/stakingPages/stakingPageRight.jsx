@@ -19,13 +19,10 @@ import {
 } from "@solana/spl-token";
 import idl from "../json/idl.json";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { stakingData } from "../utils/constants";
+import { adminKeyPair, stakingData } from "../utils/constants";
 
 const StakingPageRight = React.forwardRef((props, ref) => {
     const [isUnstakeVisible, setIsUnstakeVisible] = useState(false);
-    const [isStakeConfirmed, setIsStakeConfirmed] = useState(false);
-    const [selectedToken, setSelectedToken] = useState('ikigai');
-    const { connected, wallet } = useWallet();
     const {
         isWalletConnectConfirming,
         closeWalletConnectConfirming,
@@ -34,10 +31,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
         approval,
         approvalUnknown,
     } = useWalletConnect();
-    const network = WalletAdapterNetwork.Devnet;
 
-    // You can also provide a custom RPC endpoint.
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
     const closeUnstakeComponent = () => {
         setIsUnstakeVisible(false);
@@ -49,7 +43,6 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     const [isStakeVisible, setIsStakeVisible] = useState(false);
     const closeStakeComponent = () => {
         setIsStakeVisible(false);
-        // setStakeAmount("")
     };
     const OpenStakeComponent = () => {
         setIsStakeVisible(true);
@@ -69,31 +62,76 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     const [startDateApproval, setStartDateApproval] = useState();
     const [redDateApproval, setRedDateApproval] = useState();
     const [redemptionDate, setRedemptionDate] = useState();
-    const admin = new PublicKey("DG6ZWtgMqYo4P9wsjF5vetosPZmthk33AxJCgeBEY7nr");
-    const adminKeyPair = Keypair.fromSeed(admin?.toBytes());
-    const poolInfo = new PublicKey(
-        "FjT1Wwp3scx1x4bCnVpGyAUoPDMT1GVmAu2VAGzT16hB",
+    const [isStakeConfirmed, setIsStakeConfirmed] = useState(false);
+    const [userInfoPDA, setUserInfoPDA] = useState();
+    const [isUnstakeDisabled, setIsUnstakeDisabled] = useState(false);
+    const [selectedToken, setSelectedToken] = useState('ikigai');
+    const { publicKey, connected, wallet } = useWallet();
+    const network = WalletAdapterNetwork.Devnet;
+    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+
+    const opts = { preflightCommitment: "processed" };
+
+    const connection = new Connection(endpoint, opts.preflightCommitment);
+    const provider = new AnchorProvider(
+        connection,
+        wallet?.adapter,
+        opts.preflightCommitment,
     );
-    const poolKeyPair = Keypair.fromSeed(poolInfo?.toBytes());
+
+    const program = new Program(idl, stakingData[selectedToken].stakeProg, provider);
+
     const stakingTokenMint = new PublicKey(
-        "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
+        stakingData[selectedToken].mintAddr,
     );
-    const userInfo =
-        JSON.parse(localStorage.getItem("userInfo")) ?? Keypair.generate();
-    // localStorage.setItem("userInfo", JSON.stringify(userInfo))
-    const publicKeyArray = Uint8Array.from(
-        Object.values(userInfo._keypair.publicKey),
-    );
-    const secretKeyArray = Uint8Array.from(
-        Object.values(userInfo._keypair.secretKey),
-    );
-    const publicKey = new PublicKey(publicKeyArray);
-    const _keypair = {
-        publicKey: publicKey,
-        secretKey: secretKeyArray,
-    };
-    const publicAddress = publicKey.toBase58();
-    console.log({ publicAddress });
+    
+    const poolInfoPDA = PublicKey.findProgramAddressSync(
+        [Buffer.from("pool_info"), stakingTokenMint.toBuffer()],
+        program.programId,
+    )[0];
+
+    useEffect(() => {
+        console.log("Wallet connected:", connected);
+
+        if(connected){
+            const userinfoPDA = PublicKey.findProgramAddressSync(
+                [Buffer.from("user_info"), publicKey?.toBuffer()],
+                program.programId,
+            )[0];
+            setUserInfoPDA(userinfoPDA);
+
+            console.log("Public Key:", publicKey?.toString());
+            console.log({ poolInfoPDA: poolInfoPDA.toString() });
+            console.log({ userinfoPDA: userinfoPDA?.toString() });
+        }
+    }, [connected]);
+
+
+    // const admin = new PublicKey("DG6ZWtgMqYo4P9wsjF5vetosPZmthk33AxJCgeBEY7nr");
+    // const adminKeyPair = Keypair.fromSeed(admin?.toBytes());
+    // const poolInfo = new PublicKey(
+    //     "FjT1Wwp3scx1x4bCnVpGyAUoPDMT1GVmAu2VAGzT16hB",
+    // );
+    // const poolKeyPair = Keypair.fromSeed(poolInfo?.toBytes());
+    // const stakingTokenMint = new PublicKey(
+    //     "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
+    // );
+    // const userInfo =
+    //     JSON.parse(localStorage.getItem("userInfo")) ?? Keypair.generate();
+    // // localStorage.setItem("userInfo", JSON.stringify(userInfo))
+    // const publicKeyArray = Uint8Array.from(
+    //     Object.values(userInfo._keypair.publicKey),
+    // );
+    // const secretKeyArray = Uint8Array.from(
+    //     Object.values(userInfo._keypair.secretKey),
+    // );
+    // const publicKey = new PublicKey(publicKeyArray);
+    // const _keypair = {
+    //     publicKey: publicKey,
+    //     secretKey: secretKeyArray,
+    // };
+    // const publicAddress = publicKey.toBase58();
+    // console.log({ publicAddress });
 
     const handleInput = (e) => {
         setStakeAmount(Number(e.target.value));
@@ -146,85 +184,45 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     }, [stakeDuration]);
 
     useEffect(() => {
-        getUserInfo();
+        if(userInfoPDA){
+            getUserInfo();
+        }
         setStartDateApproval(getCurrentFormattedDate());
-    }, []);
+    }, [userInfoPDA]);
 
     useEffect(() => {
         setRedDateApproval(getRedemtionFormattedDate(stakeDuration));
     }, [stakeDuration]);
 
     const getUserInfo = async () => {
-        const connection = new Connection(endpoint, "confirmed");
-        const provider = new AnchorProvider(
-            connection,
-            wallet.adapter,
-            AnchorProvider.defaultOptions(),
-        );
-        const program = new Program(
-            idl,
-            "A1KnSRkwF34piFfioJ1NPfeCVRLp5rgJ6kjQz579LCqP",
-            provider,
-        );
-        const userWallet = provider.wallet.publicKey;
-        // const userStakingWallet = await getOrCreateAssociatedTokenAccount(
-        //   connection,
-        //   adminKeyPair,
-        //   stakingTokenMint,
-        //   userWallet,
-        // );
-        // console.log({userStakingWallet:userStakingWallet.owner.toString()})
-        const accountInfo = await connection.getAccountInfo(
-            adminKeyPair.publicKey,
-        );
-        console.log(accountInfo);
-
-        const poolData = await program.account.userInfo.fetch(
-            publicKey.toString(),
-        );
-        console.log({ poolData });
-        console.log({
-            poolData2: {
-                amount: poolData.amount.toString(),
-                depositTimestamp: poolData.depositTimestamp.toString(),
-                lockPeriod: poolData.lockPeriod.toString(),
-                rewardDebt: poolData.rewardDebt.toString(),
-                rewardPercentage: poolData.rewardPercentage.toString(),
-            },
-        });
+        const userInfoData = await program.account.userInfo.fetch(userInfoPDA);
+        if(userInfoData?.amount?.toNumber() === 0) {
+            setIsUnstakeDisabled(true);
+        }else{
+            setIsUnstakeDisabled(false);
+        }
+        // console.log({userInfoData});
+        // console.log({
+        //     userInfoData: {
+        //         amount: userInfoData.amount.toNumber(),
+        //         depositTimestamp: userInfoData.depositTimestamp.toString(),
+        //         lockPeriod: userInfoData.lockPeriod.toString(),
+        //         rewardDebt: userInfoData.rewardDebt.toString(),
+        //         rewardPercentage: userInfoData.rewardPercentage.toString(),
+        //     },
+        // });
     };
 
     const stake = async () => {
         try {
-            const stakingTokenMint = new PublicKey(
-                stakingData[selectedToken].mintAddr,
-            );
-            const connection = new Connection(endpoint, "confirmed");
-            const provider = new AnchorProvider(
-                connection,
-                wallet.adapter,
-                AnchorProvider.defaultOptions(),
-            );
-            const program = new Program(
-                idl,
-                stakingData[selectedToken].stakeProg,
-                provider,
-            );
-
             const userWallet = provider.wallet.publicKey;
 
             const userStakingWallet = await getOrCreateAssociatedTokenAccount(
                 connection,
-                adminKeyPair,
+                userWallet,
                 stakingTokenMint,
                 userWallet,
             );
-
-            const userAccount = await getAccount(
-                connection,
-                userStakingWallet.address,
-            );
-            console.log("User Token Balance:", userAccount.amount);
 
             const adminTokenAccount = await getOrCreateAssociatedTokenAccount(
                 connection,
@@ -236,27 +234,15 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             const accounts = {
                 user: userWallet,
                 admin: adminKeyPair.publicKey,
-                userInfo: publicKey,
+                userInfo: userInfoPDA,
                 userStakingWallet: userStakingWallet.address,
                 adminStakingWallet: adminTokenAccount.address,
                 stakingToken: stakingTokenMint,
-                poolInfo: poolKeyPair.publicKey,
+                poolInfo: poolInfoPDA,
                 tokenProgram: TOKEN_PROGRAM_ID,
                 systemProgram: SystemProgram.programId,
             };
-            const accounts2 = {
-                user: userWallet.toString(),
-                admin: adminKeyPair.publicKey.toString(),
-                // userInfo: userInfoKeyPair.publicKey,
-                userInfo: publicKey.toString(),
-                userStakingWallet: userStakingWallet.address.toString(),
-                adminStakingWallet: adminTokenAccount.address.toString(),
-                stakingToken: stakingTokenMint.toString(),
-                poolInfo: poolKeyPair.publicKey.toString(),
-                tokenProgram: TOKEN_PROGRAM_ID.toString(),
-                systemProgram: SystemProgram.programId.toString(),
-            };
-            console.log({ accounts, accounts2 });
+        
             const time = new BN(stakeDuration);
             const dynamicValue = `${stakeAmount}e9`;
             const bnAmount = new BN(Number(dynamicValue));
@@ -264,13 +250,14 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             const tx = await program.methods
                 .stake(time, bnAmount)
                 .accounts(accounts)
-                .signers([_keypair])
+                .signers([adminKeyPair])
                 .rpc();
 
             console.log("Stake transaction successful:", tx);
             if (tx) {
                 approvalCompleted();
                 OpenTransactionConfirming();
+                getUserInfo()
             }
         } catch (error) {
             alert(error.message);
@@ -280,35 +267,15 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
     const unStake = async () => {
         try {
-            const stakingTokenMint = new PublicKey(
-                stakingData[selectedToken].mintAddr,
-            );
-            const connection = new Connection(endpoint, "confirmed");
-            const provider = new AnchorProvider(
-                connection,
-                wallet.adapter,
-                AnchorProvider.defaultOptions(),
-            );
-            const program = new Program(
-                idl,
-                stakingData[selectedToken].stakeProg,
-                provider,
-            );
-
-            // User's wallet
             const userWallet = provider.wallet.publicKey;
 
             const userStakingWallet = await getOrCreateAssociatedTokenAccount(
                 connection,
-                adminKeyPair,
+                userWallet,
                 stakingTokenMint,
                 userWallet,
             );
-            console.log({
-                userWallet,
-                userStakingWallet,
-                owner: userStakingWallet.owner.toString(),
-            });
+
             const adminTokenAccount = await getOrCreateAssociatedTokenAccount(
                 connection,
                 adminKeyPair,
@@ -319,31 +286,15 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             const accounts = {
                 user: userWallet,
                 admin: adminKeyPair.publicKey,
-                // userInfo: userInfoKeyPair.publicKey,
-                userInfo: publicKey,
+                userInfo: userInfoPDA,
                 userStakingWallet: userStakingWallet.address,
                 adminStakingWallet: adminTokenAccount.address,
                 stakingToken: stakingTokenMint,
-                poolInfo: poolKeyPair.publicKey,
+                poolInfo: poolInfoPDA,
                 tokenProgram: TOKEN_PROGRAM_ID,
                 systemProgram: SystemProgram.programId,
             };
-            const accounts2 = {
-                user: userWallet.toString(),
-                admin: adminKeyPair.publicKey.toString(),
-                // userInfo: userInfoKeyPair.publicKey,
-                userInfo: publicKey.toString(),
-                userStakingWallet: userStakingWallet.address.toString(),
-                adminStakingWallet: adminTokenAccount.address.toString(),
-                stakingToken: stakingTokenMint.toString(),
-                poolInfo: poolKeyPair.publicKey.toString(),
-                tokenProgram: TOKEN_PROGRAM_ID.toString(),
-                systemProgram: SystemProgram.programId.toString(),
-            };
-            console.log({ accounts, accounts2 });
-
-            console.log(stakeAmount);
-
+            
             const tx = await program.methods
                 .unstake()
                 .accounts(accounts)
@@ -351,6 +302,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                 .rpc();
 
             console.log("Stake transaction successful:", tx);
+            if(tx){
+                getUserInfo()
+            }
         } catch (error) {
             alert(error.message);
             console.error("Error staking tokens:", error);
@@ -828,11 +782,11 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                     </span>
                                     <div style={{ display: "flex", fontSize: "15px", marginTop: 10, justifyContent: "center", alignItems: "center", gap: 40 }}>
                                         <div style={{ fontSize: 20 }}>
-                                            <input type="checkbox" checked={selectedToken === 'ikigai'}onChange={()=>setSelectedToken('ikigai')}/>
+                                            <input type="checkbox" checked={selectedToken === 'ikigai'} onChange={() => setSelectedToken('ikigai')} />
                                             ikigai
                                         </div>
                                         <div style={{ fontSize: 20 }}>
-                                            <input type="checkbox" checked={selectedToken === 'tyke'} onChange={()=>setSelectedToken('tyke')}/>
+                                            <input type="checkbox" checked={selectedToken === 'tyke'} onChange={() => setSelectedToken('tyke')} />
                                             tyke
                                         </div>
 
@@ -1021,9 +975,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                                 padding: 0,
                                             }}
                                             onPress={() => {
-                                                // OpenUnstakeComponent();
                                                 unStake();
                                             }}
+                                            disabled={isUnstakeDisabled}
                                         >
                                             <span className="stake_main_font_style">
                                                 UNSTAKE
@@ -1255,9 +1209,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         d="M1.75911 10.1941L2.43564 10.9305L1.7591 10.1941C0.821036 11.0559 0.743512 12.5213 1.57611 13.4808L2.3314 12.8254L1.57611 13.4808L6.54504 19.2071C6.97891 19.7071 7.60657 20 8.27329 20C8.94002 20 9.56768 19.7071 10.0015 19.2072L22.4239 4.89137C23.2565 3.93187 23.179 2.46639 22.2409 1.60458C21.2863 0.727622 19.8143 0.816829 18.9674 1.79286L8.27329 14.117L5.03261 10.3823C4.18567 9.4063 2.71367 9.31709 1.75911 10.1941Z"
                                         fill="white"
                                         stroke="black"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
                                     />
                                 </svg>
                             </div>
