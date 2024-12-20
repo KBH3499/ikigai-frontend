@@ -201,16 +201,22 @@ const StakingPageRight = React.forwardRef((props, ref) => {
         }else{
             setIsUnstakeDisabled(false);
         }
-        // console.log({userInfoData});
-        // console.log({
-        //     userInfoData: {
-        //         amount: userInfoData.amount.toNumber(),
-        //         depositTimestamp: userInfoData.depositTimestamp.toString(),
-        //         lockPeriod: userInfoData.lockPeriod.toString(),
-        //         rewardDebt: userInfoData.rewardDebt.toString(),
-        //         rewardPercentage: userInfoData.rewardPercentage.toString(),
-        //     },
-        // });
+        console.log({userInfoData});
+        console.log({
+            userInfoData: {
+                amount: userInfoData.amount.toNumber()/1e9,
+                depositTimestamp: userInfoData.depositTimestamp.toString(),
+                lockPeriod: userInfoData.lockPeriod.toString(),
+                rewardDebt: userInfoData.rewardDebt.toString(),
+                rewardPercentage: userInfoData.rewardPercentage.toString(),
+            },
+        });
+        const stakeAmount = userInfoData.amount.toNumber()/1e9;
+        const rewardPercentage= userInfoData.rewardPercentage.toNumber()
+        const lockSeconds =  userInfoData.lockPeriod.toNumber()
+        const expectedReward = (stakeAmount * rewardPercentage * lockSeconds)/ (100 * lockSeconds);
+
+        localStorage.setItem("expectedReward", expectedReward)
     };
 
     const stake = async () => {
@@ -805,7 +811,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                   </div>
                 </div> */}
                             </div>
-                            <div className="stake_current_info">
+                            {/* <div className="stake_current_info">
                                 <div>
                                     <div>
                                         <span style={{ fontSize: "9px" }}>
@@ -839,7 +845,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         <span>ikgai</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div
                                 style={{
                                     width: "100%",
@@ -981,6 +987,25 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         >
                                             <span className="stake_main_font_style">
                                                 UNSTAKE
+                                            </span>
+                                        </AwesomeButton>
+                                    </div>
+                                    <div style={{ paddingRight: "10px" }}>
+                                        <AwesomeButton
+                                            className="stake-aws-btn3"
+                                            type="secondary"
+                                            style={{
+                                                fontSize: "16px",
+                                                fontFamily: "KaoriGelBold",
+                                                padding: 0,
+                                            }}
+                                            onPress={() => {
+                                                unStake();
+                                            }}
+                                            disabled={isUnstakeDisabled}
+                                        >
+                                            <span className="stake_main_font_style">
+                                                CLAIM REWARD
                                             </span>
                                         </AwesomeButton>
                                     </div>
