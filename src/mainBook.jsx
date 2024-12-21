@@ -94,6 +94,12 @@ const MusicPageLeft = React.lazy(() =>
 const MusicPageRight = React.lazy(() =>
   import("./pages/music-section/MusicPageRight")
 );
+const AdminPageLeft = React.lazy(() =>
+  import("./pages/admin/AdminPageLeft")
+);
+const AmdinPageRight = React.lazy(() =>
+  import("./pages/admin/AdminPageRight")
+);
 
 const MainBook = () => {
   const { isDarkModeEnabled } = useDarkMode();
@@ -303,15 +309,14 @@ const MainBook = () => {
                 <ContactUs />
                 <Page15 pageNumber={currentPage} />
                 <Page16 pageNumber={currentPage} />
-                {/* <JumpingLeft /> */}
                 <LearningLeft />
                 <LearningRight />
-                {/* <JumpingLeft />
-                <MerchBlankRight /> */}
                 <StakingPageLeft isClaimed={isClaimed} />
                 <StakingPageRight setIsClaimed={setIsClaimed} />
                 <MusicPageLeft />
                 <MusicPageRight isMobile={isMobile} />
+                <AdminPageLeft />
+                <AmdinPageRight isMobile={isMobile} />
               </HTMLFlipBook>
             </div>
             {!isMobile && (
