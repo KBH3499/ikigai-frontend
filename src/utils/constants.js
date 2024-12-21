@@ -1,17 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
 
-export const stakingData = {
-    ikigai : {
-        mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
-        stakeProg:"AproH98aNb7xEwGJRkRK7ruYhwfVEqPoYqTytBtGEaxy",
-    },
-    tyke: {
-        mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdEF",
-        stakeProg:"AproH98aNb7xEwGJRkRK7ruYhwfVEqPoYqTytBtGEaxy",
-    }
-}
-
-
 const _keypairAdminRaw = {
     publicKey: {
         0: 108,
@@ -127,3 +115,132 @@ export const adminKeyPair = {
     publicKey: publicKeyAdmin,
     secretKey: secretKeyArrayAdmin,
 };
+
+const _keyPairTykeAdminRaw = {
+    "publicKey": {
+        "0": 190,
+        "1": 75,
+        "2": 178,
+        "3": 32,
+        "4": 116,
+        "5": 249,
+        "6": 52,
+        "7": 49,
+        "8": 2,
+        "9": 26,
+        "10": 23,
+        "11": 152,
+        "12": 9,
+        "13": 245,
+        "14": 253,
+        "15": 112,
+        "16": 178,
+        "17": 48,
+        "18": 231,
+        "19": 8,
+        "20": 207,
+        "21": 96,
+        "22": 227,
+        "23": 155,
+        "24": 188,
+        "25": 219,
+        "26": 127,
+        "27": 132,
+        "28": 140,
+        "29": 107,
+        "30": 0,
+        "31": 144
+    },
+    "secretKey": {
+        "0": 26,
+        "1": 158,
+        "2": 139,
+        "3": 242,
+        "4": 193,
+        "5": 119,
+        "6": 118,
+        "7": 29,
+        "8": 18,
+        "9": 246,
+        "10": 21,
+        "11": 3,
+        "12": 230,
+        "13": 205,
+        "14": 97,
+        "15": 27,
+        "16": 185,
+        "17": 195,
+        "18": 80,
+        "19": 223,
+        "20": 37,
+        "21": 38,
+        "22": 195,
+        "23": 151,
+        "24": 179,
+        "25": 128,
+        "26": 1,
+        "27": 171,
+        "28": 122,
+        "29": 236,
+        "30": 74,
+        "31": 13,
+        "32": 190,
+        "33": 75,
+        "34": 178,
+        "35": 32,
+        "36": 116,
+        "37": 249,
+        "38": 52,
+        "39": 49,
+        "40": 2,
+        "41": 26,
+        "42": 23,
+        "43": 152,
+        "44": 9,
+        "45": 245,
+        "46": 253,
+        "47": 112,
+        "48": 178,
+        "49": 48,
+        "50": 231,
+        "51": 8,
+        "52": 207,
+        "53": 96,
+        "54": 227,
+        "55": 155,
+        "56": 188,
+        "57": 219,
+        "58": 127,
+        "59": 132,
+        "60": 140,
+        "61": 107,
+        "62": 0,
+        "63": 144
+    }
+}
+
+const publicKeyArrayAdminTyke = Uint8Array.from(
+    Object.values(_keyPairTykeAdminRaw.publicKey),
+);
+const secretKeyArrayAdminTyke = Uint8Array.from(
+    Object.values(_keyPairTykeAdminRaw.secretKey),
+);
+const publicKeyAdminTyke = new PublicKey(publicKeyArrayAdminTyke);
+
+export const adminKeyPairTyke = {
+    publicKey: publicKeyAdminTyke,
+    secretKey: secretKeyArrayAdminTyke,
+};
+
+export const stakingData = {
+    ikigai : {
+        mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
+        stakeProg:"AproH98aNb7xEwGJRkRK7ruYhwfVEqPoYqTytBtGEaxy",
+        admin: adminKeyPair
+    },
+    tyke: {
+        mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
+        stakeProg:"Apro1E15gaCqp8ZtJZgt7LDm5X1iSscWdhYJQZCS2NDa",
+        admin: adminKeyPairTyke
+    }
+}

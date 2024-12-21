@@ -7,6 +7,9 @@ import Footer from "./components/presentation/footer";
 
 // Hooks
 import { useDarkMode } from "./provider/theme-provider";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Keypair } from "@solana/web3.js";
+import { adminKeyPair, stakingData } from "./utils/constants";
 
 // import Page6 from "./pages/roadMapRight";
 // import Page7 from "./pages/page7";
@@ -94,6 +97,9 @@ const MusicPageRight = React.lazy(() =>
 
 const MainBook = () => {
   const { isDarkModeEnabled } = useDarkMode();
+  const { publicKey, connected } = useWallet();
+  const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState()
+  const [isClaimed, setIsClaimed] = useState(false)
   const handleAudio = () => {
     const audio = new Audio("/assets/page-flip-10.mp3"); // Adjust the path as necessary
     audio.play();
@@ -135,6 +141,22 @@ const MainBook = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (connected) {
+      const temporaryAdmin = Keypair.fromSeed(publicKey.toBytes())
+      const temporaryAdminPublicKey = temporaryAdmin?.publicKey?.toString();
+      if (temporaryAdminPublicKey === stakingData['ikigai']?.admin?.publicKey?.toString() || temporaryAdminPublicKey === stakingData['tyke']?.admin?.publicKey?.toString()) {
+        setIsAdminPanelEnabled(true);
+        console.log("Connected Wallet is Admin", temporaryAdminPublicKey);
+      } else {
+        setIsAdminPanelEnabled(false);
+        console.log("Connected Wallet is Not Admin", temporaryAdminPublicKey);
+      }
+    }else{
+      setIsAdminPanelEnabled(false);
+    }
+  }, [connected])
+
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handleClick = () => {
@@ -158,6 +180,7 @@ const MainBook = () => {
         nextButtonClick={nextButtonClick}
         isShrinkNav={isShrinkNav}
         setIsShrinkNav={setIsShrinkNav}
+        isAdminPanelEnabled={isAdminPanelEnabled}
       />
       <div
         className="display_flex_center main_element"
@@ -281,12 +304,12 @@ const MainBook = () => {
                 <Page15 pageNumber={currentPage} />
                 <Page16 pageNumber={currentPage} />
                 {/* <JumpingLeft /> */}
-                <LearningLeft/>
+                <LearningLeft />
                 <LearningRight />
                 {/* <JumpingLeft />
                 <MerchBlankRight /> */}
-                <StakingPageLeft />
-                <StakingPageRight />
+                <StakingPageLeft isClaimed={isClaimed} />
+                <StakingPageRight setIsClaimed={setIsClaimed} />
                 <MusicPageLeft />
                 <MusicPageRight isMobile={isMobile} />
               </HTMLFlipBook>

@@ -1,8 +1,9 @@
 import { AwesomeButton } from "react-awesome-button";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDarkMode } from "../../../provider/theme-provider";
+import { useWallet } from "@solana/wallet-adapter-react";
 
-const Navbar = ({ flipBook, nextButtonClick, isShrinkNav }) => {
+const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled }) => {
   const hamburgerMenuButton = useRef();
   const { isDarkModeEnabled, toggleDarkMode } = useDarkMode();
   const themeImage = isDarkModeEnabled
@@ -18,6 +19,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav }) => {
   const buttonType = useMemo(() => {
     return isDarkModeEnabled ? "facebook" : "primary";
   }, [isDarkModeEnabled]);
+
 
   return (
     <div>
@@ -387,6 +389,25 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav }) => {
                     Staking
                   </span>
                 </AwesomeButton>
+                {isAdminPanelEnabled && <AwesomeButton
+                  className="nav_button_padding"
+                  type={buttonType}
+                  style={{
+                    fontFamily: "KaoriGelBold",
+                    paddingRight: "2px",
+                    paddingLeft: "2px",
+                  }}
+                  onPress={() => {
+                    flipBook.current.pageFlip().flip(58, "top");
+                    if (isShrinkNav) {
+                      toggleMenu();
+                    }
+                  }}
+                >
+                  <span style={{ color: "yellow" }}>
+                    Admin
+                  </span>
+                </AwesomeButton>}
 
                 <AwesomeButton
                   className="nav_button_padding"

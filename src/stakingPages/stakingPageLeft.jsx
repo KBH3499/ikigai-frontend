@@ -6,9 +6,10 @@ import "react-awesome-button/dist/themes/theme-blue.css";
 import { useWalletConnect } from "../provider/staking-provider";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletReadyState } from "@solana/wallet-adapter-base";
+import { useMediaQuery } from "react-responsive";
 
 const StakingPageLeft = React.forwardRef((props, ref) => {
-  const [currentWidth, setCurrentWidth] = useState()
+  const isMobile = useMediaQuery({ query: "(max-width: 1400px)" });
   const [totalReward, setTotalReward] = useState()
   const [percentage, setPercentage] = useState(0); // Tracks the percentage dragged
   const [isDisConnecting, setIsDisConnecting] = useState(false);
@@ -84,7 +85,6 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    setCurrentWidth(window.innerWidth)
     if (connected) {
       setIsWalletConnected(true);
       closeWalletConnect();
@@ -92,9 +92,9 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
   }, [connected]);
 
   useEffect(()=>{
-    const expectedReward = localStorage?.getItem("expectedReward")
-    setTotalReward(expectedReward)
-  },[])
+    const expectedReward = localStorage?.getItem("claimedRewards")
+    setTotalReward(expectedReward ?? 0)
+  },[props.isClaimed])
 
   return (
     <div
@@ -145,7 +145,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
           className="stake_border">
           <div
             className="stake_element1"
-            style={currentWidth > 1400 ? { overflowY: "auto" } : { }}
+            style={!isMobile ? { overflowY: "auto" } : { }}
             >
             <div className=" stake_main_font_style stake_wrap stake_flex_align_center">
               <div className="stake_flex_align_center">
@@ -159,7 +159,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     style={{ height: "100%" }}
                   />
                 </div>
-                {currentWidth <= 1400 && <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
+                {isMobile && <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
                   <AwesomeButton
                     className="stake-aws-btn"
                     type="primary"
@@ -221,7 +221,8 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   </AwesomeButton>
                 </div>}
               </div>
-              {currentWidth > 1400 && <div className="stake_flex_align_center">
+            </div>
+              {!isMobile && <div className="stake_flex_align_center">
                 <div>
                   <AwesomeButton
                     className="stake-aws-btn"
@@ -293,31 +294,30 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   </AwesomeButton>
                 </div>
               </div>}
-            </div>
-            {currentWidth > 1400 && <div
+            {!isMobile && <div
               style={{
                 justifyContent: "start",
                 display: "flex",
               }}
             >
-              <div>
+              {connected && <div>
                 <span
                   className="stake_main_font_style"
                   style={{
                     textAlign: "start",
-                    fontSize: "12px",
+                    fontSize: isMobile ? "12px": "20px",
                   }}
                 >
-                  Total Rewards
+                  Total Claimed Rewards
                 </span>
-              </div>
+              </div>}
             </div>}
-            <div className="stake_flex_align_center stake_wrap">
-              {currentWidth > 1400 && <div style={{ display: "flex" }}>
+            {connected && <div className="stake_flex_align_center stake_wrap">
+              {!isMobile && <div style={{ display: "flex" }}>
                 <div>
                   <span
                     className="stake_main_font_style"
-                    style={{ fontSize: "25px" }}
+                    style={{ fontSize: isMobile ? "25px" : "30px" }}
                   >
                     {totalReward}
                   </span>
@@ -335,7 +335,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                 </div>
               </div>
               }
-              {currentWidth <= 1400 &&
+              {isMobile && connected &&
                 <div style={{ display: "flex", justifyContent: "center", alignContent: "center", gap:2 }}>
                   <span
                     className="stake_main_font_style"
@@ -344,7 +344,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       fontSize: "15px",
                     }}
                   >
-                    Total Rewards: {" "}
+                    Total Claimed Rewards: {" "}
                   </span>
                   <span
                     className="stake_main_font_style"
@@ -421,10 +421,10 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   </AwesomeButton>
                 </div>
               </div>} */}
-            </div>
+            </div>}
             <div
               className="stake_flex_align_center"
-              style={{ justifyContent: "center", padding: currentWidth <=1400 ? "0px" :"20px", marginTop: currentWidth <=1400 ? 20 :0 }}
+              style={{ justifyContent: "center", padding: isMobile ? "0px" :"20px", marginTop: isMobile ? 20 :0 }}
             >
               <div style={{ paddingLeft: "10px", width: "100%" }}>
                 <AwesomeButton
