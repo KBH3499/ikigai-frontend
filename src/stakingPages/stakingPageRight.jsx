@@ -15,6 +15,7 @@ import { Program, AnchorProvider, BN } from "@project-serum/anchor";
 import {
     TOKEN_PROGRAM_ID,
     getAccount,
+    getAssociatedTokenAddress,
     getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
 import idl from "../json/idl.json";
@@ -64,11 +65,20 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     const [redemptionDate, setRedemptionDate] = useState();
     const [isStakeConfirmed, setIsStakeConfirmed] = useState(false);
     const [userInfoPDA, setUserInfoPDA] = useState();
+    const [poolInfoPDA, setPoolInfoPDA] = useState();
+    const [tokenToMint, setTokenToMint] = useState();
     const [isUnstakeDisabled, setIsUnstakeDisabled] = useState(false);
     const [selectedToken, setSelectedToken] = useState('ikigai');
+    const [selectedTokenDetails, setSelectedTokenDetails] = useState(stakingData['ikigai']);
     const { publicKey, connected, wallet } = useWallet();
+    const [isClaiming, setIsClaiming] = useState(false);
+    const [isUnstaking, setIsUnstaking] = useState(false);
+    const [isStaking, setIsStaking] = useState(false);
+    const [expectedRewards, setExpectedRewards] = useState()
+    const [adminBalance, setAdminBalance] = useState(false);
     const network = WalletAdapterNetwork.Devnet;
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    const [currentProgram, setCurrentProgram] = useState()
 
     const opts = { preflightCommitment: "processed" };
 
@@ -79,33 +89,45 @@ const StakingPageRight = React.forwardRef((props, ref) => {
         opts.preflightCommitment,
     );
 
-    const program = new Program(idl, stakingData[selectedToken].stakeProg, provider);
-
-    const stakingTokenMint = new PublicKey(
-        stakingData[selectedToken].mintAddr,
-    );
-    
-    const poolInfoPDA = PublicKey.findProgramAddressSync(
-        [Buffer.from("pool_info"), stakingTokenMint.toBuffer()],
-        program.programId,
-    )[0];
+    useEffect(() => {
+        if (selectedTokenDetails) {
+            const programData = new Program(idl, selectedTokenDetails?.stakeProg, provider);
+            const stakingTokenMint = new PublicKey(selectedTokenDetails.mintAddr);
+            setTokenToMint(stakingTokenMint)
+            setCurrentProgram(programData)
+        }
+    }, [selectedTokenDetails])
 
     useEffect(() => {
-        console.log("Wallet connected:", connected);
-
-        if(connected){
+        if (connected && currentProgram) {
+            fetchTokenBalance();
             const userinfoPDA = PublicKey.findProgramAddressSync(
                 [Buffer.from("user_info"), publicKey?.toBuffer()],
-                program.programId,
+                currentProgram?.programId,
+            )[0];
+
+            const poolinfoPDA = PublicKey.findProgramAddressSync(
+                [Buffer.from("pool_info"), tokenToMint.toBuffer()],
+                currentProgram?.programId,
             )[0];
             setUserInfoPDA(userinfoPDA);
-
-            console.log("Public Key:", publicKey?.toString());
-            console.log({ poolInfoPDA: poolInfoPDA.toString() });
-            console.log({ userinfoPDA: userinfoPDA?.toString() });
+            setPoolInfoPDA(poolinfoPDA);
         }
-    }, [connected]);
+    }, [connected, currentProgram]);
 
+    const fetchTokenBalance = async () => {
+        try {
+            const tokenAddress = await getAssociatedTokenAddress(
+                tokenToMint,
+                selectedTokenDetails.admin.publicKey
+            );
+            const tokenAccount = await getAccount(connection, tokenAddress);
+            setAdminBalance(Number(tokenAccount.amount.toString()) / 1e9)
+        } catch (error) {
+            console.error("Error fetching token balance:", error);
+        } finally {
+        }
+    };
 
     // const admin = new PublicKey("DG6ZWtgMqYo4P9wsjF5vetosPZmthk33AxJCgeBEY7nr");
     // const adminKeyPair = Keypair.fromSeed(admin?.toBytes());
@@ -184,7 +206,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     }, [stakeDuration]);
 
     useEffect(() => {
-        if(userInfoPDA){
+        if (userInfoPDA) {
             getUserInfo();
         }
         setStartDateApproval(getCurrentFormattedDate());
@@ -195,62 +217,69 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     }, [stakeDuration]);
 
     const getUserInfo = async () => {
-        const userInfoData = await program.account.userInfo.fetch(userInfoPDA);
-        if(userInfoData?.amount?.toNumber() === 0) {
+        try {
+            
+            const userInfoData = await currentProgram.account.userInfo.fetch(userInfoPDA);
+            if (userInfoData?.amount?.toNumber() === 0) {
+                setIsUnstakeDisabled(true);
+            } else {
+                setIsUnstakeDisabled(false);
+            }
+            
+            const stakeAmount = userInfoData.amount.toNumber() / 1e9;
+            const rewardPercentage = userInfoData.rewardPercentage.toNumber()
+            const lockSeconds = userInfoData.lockPeriod.toNumber()
+            const expectedReward = (stakeAmount * rewardPercentage * lockSeconds) / (100 * lockSeconds);
+            const claimedRewards = userInfoData.rewardDebt.toNumber() / 1e9;
+            setExpectedRewards(isNaN(expectedReward) ? 0 : expectedReward)
+            localStorage.setItem("expectedReward", isNaN(expectedReward) ? 0 : expectedReward)
+            localStorage.setItem("claimedRewards", claimedRewards)
+        } catch (error) {
+            setExpectedRewards(0)
             setIsUnstakeDisabled(true);
-        }else{
-            setIsUnstakeDisabled(false);
         }
-        // console.log({userInfoData});
-        // console.log({
-        //     userInfoData: {
-        //         amount: userInfoData.amount.toNumber(),
-        //         depositTimestamp: userInfoData.depositTimestamp.toString(),
-        //         lockPeriod: userInfoData.lockPeriod.toString(),
-        //         rewardDebt: userInfoData.rewardDebt.toString(),
-        //         rewardPercentage: userInfoData.rewardPercentage.toString(),
-        //     },
-        // });
     };
 
     const stake = async () => {
         try {
+            setIsStaking(true);
+
             const userWallet = provider.wallet.publicKey;
 
             const userStakingWallet = await getOrCreateAssociatedTokenAccount(
                 connection,
                 userWallet,
-                stakingTokenMint,
+                tokenToMint,
                 userWallet,
             );
 
             const adminTokenAccount = await getOrCreateAssociatedTokenAccount(
                 connection,
-                adminKeyPair,
-                stakingTokenMint,
-                adminKeyPair.publicKey,
+                selectedTokenDetails.admin,
+                tokenToMint,
+                selectedTokenDetails.admin.publicKey,
             );
 
             const accounts = {
                 user: userWallet,
-                admin: adminKeyPair.publicKey,
+                admin: selectedTokenDetails.admin.publicKey,
                 userInfo: userInfoPDA,
                 userStakingWallet: userStakingWallet.address,
                 adminStakingWallet: adminTokenAccount.address,
-                stakingToken: stakingTokenMint,
+                stakingToken: tokenToMint,
                 poolInfo: poolInfoPDA,
                 tokenProgram: TOKEN_PROGRAM_ID,
                 systemProgram: SystemProgram.programId,
             };
-        
+
             const time = new BN(stakeDuration);
             const dynamicValue = `${stakeAmount}e9`;
             const bnAmount = new BN(Number(dynamicValue));
 
-            const tx = await program.methods
+            const tx = await currentProgram.methods
                 .stake(time, bnAmount)
                 .accounts(accounts)
-                .signers([adminKeyPair])
+                .signers([selectedTokenDetails.admin])
                 .rpc();
 
             console.log("Stake transaction successful:", tx);
@@ -258,56 +287,116 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                 approvalCompleted();
                 OpenTransactionConfirming();
                 getUserInfo()
+                setIsStaking(false)
             }
+
+            alert("Successfully Staked");
         } catch (error) {
             alert(error.message);
+            setIsStaking(false)
             console.error("Error staking tokens:", error);
         }
     };
 
     const unStake = async () => {
         try {
+            setIsUnstaking(true);
+
             const userWallet = provider.wallet.publicKey;
 
             const userStakingWallet = await getOrCreateAssociatedTokenAccount(
                 connection,
                 userWallet,
-                stakingTokenMint,
+                tokenToMint,
                 userWallet,
             );
 
             const adminTokenAccount = await getOrCreateAssociatedTokenAccount(
                 connection,
-                adminKeyPair,
-                stakingTokenMint,
-                adminKeyPair.publicKey,
+                selectedTokenDetails.admin,
+                tokenToMint,
+                selectedTokenDetails.admin.publicKey,
             );
 
             const accounts = {
                 user: userWallet,
-                admin: adminKeyPair.publicKey,
+                admin: selectedTokenDetails.admin.publicKey,
                 userInfo: userInfoPDA,
                 userStakingWallet: userStakingWallet.address,
                 adminStakingWallet: adminTokenAccount.address,
-                stakingToken: stakingTokenMint,
+                stakingToken: tokenToMint,
                 poolInfo: poolInfoPDA,
                 tokenProgram: TOKEN_PROGRAM_ID,
                 systemProgram: SystemProgram.programId,
             };
-            
-            const tx = await program.methods
+
+            const tx = await currentProgram.methods
                 .unstake()
                 .accounts(accounts)
-                .signers([adminKeyPair])
+                .signers([selectedTokenDetails.admin])
                 .rpc();
 
             console.log("Stake transaction successful:", tx);
-            if(tx){
-                getUserInfo()
+            if (tx) {
+                alert("Successfully Unstaked");
+                getUserInfo();
+                setIsUnstaking(false);
             }
         } catch (error) {
+            setIsUnstaking(false);
             alert(error.message);
             console.error("Error staking tokens:", error);
+        }
+    };
+
+    const claimReward = async () => {
+        try {
+            setIsClaiming(true);
+
+            const userWallet = provider.wallet.publicKey;
+
+            const userStakingWallet = await getOrCreateAssociatedTokenAccount(
+                connection,
+                adminKeyPair,
+                tokenToMint,
+                userWallet,
+            );
+
+            const adminTokenAccount = await getOrCreateAssociatedTokenAccount(
+                connection,
+                selectedTokenDetails.admin,
+                tokenToMint,
+                selectedTokenDetails.admin.publicKey,
+            );
+
+            const accounts = {
+                user: userWallet,
+                admin: selectedTokenDetails.admin.publicKey,
+                userInfo: userInfoPDA,
+                userStakingWallet: userStakingWallet.address,
+                adminStakingWallet: adminTokenAccount.address,
+                stakingToken: tokenToMint,
+                tokenProgram: TOKEN_PROGRAM_ID,
+            };
+
+            const tx = await currentProgram.methods
+                .claimReward()
+                .accounts(accounts)
+                .signers([selectedTokenDetails.admin])
+                .rpc();
+
+            console.log("Stake transaction successful:", tx);
+            if (tx) {
+                setIsClaiming(false);
+                props.setIsClaimed(true);
+                getUserInfo()
+                alert("Successfully Claimed")
+            }
+        } catch (error) {
+            setIsClaiming(false);
+            props.setIsClaimed(false);
+            console.error("Error staking tokens:", error);
+            alert(error.message)
         }
     };
 
@@ -540,9 +629,10 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             // OpenTransactionConfirming();
                                             stake();
                                         }}
+                                        disabled={isStaking}
                                     >
                                         <span className="stake_main_font_style">
-                                            Approve
+                                            {isStaking ? "Staking..." : "Approve"}
                                         </span>
                                     </AwesomeButton>
 
@@ -561,6 +651,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             setStakeAmount("");
                                             setStakeDuration(1);
                                         }}
+                                        disabled={isStaking}
                                     >
                                         <span className="stake_main_font_style">
                                             Cancel
@@ -782,11 +873,11 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                     </span>
                                     <div style={{ display: "flex", fontSize: "15px", marginTop: 10, justifyContent: "center", alignItems: "center", gap: 40 }}>
                                         <div style={{ fontSize: 20 }}>
-                                            <input type="checkbox" checked={selectedToken === 'ikigai'} onChange={() => setSelectedToken('ikigai')} />
+                                            <input type="checkbox" checked={selectedToken === 'ikigai'} onChange={() => { setSelectedToken('ikigai'); setSelectedTokenDetails(stakingData["ikigai"]) }} />
                                             ikigai
                                         </div>
                                         <div style={{ fontSize: 20 }}>
-                                            <input type="checkbox" checked={selectedToken === 'tyke'} onChange={() => setSelectedToken('tyke')} />
+                                            <input type="checkbox" checked={selectedToken === 'tyke'} onChange={() => { setSelectedToken('tyke'); setSelectedTokenDetails(stakingData["tyke"]) }} />
                                             tyke
                                         </div>
 
@@ -805,7 +896,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                   </div>
                 </div> */}
                             </div>
-                            <div className="stake_current_info">
+                            {/* <div className="stake_current_info">
                                 <div>
                                     <div>
                                         <span style={{ fontSize: "9px" }}>
@@ -839,7 +930,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         <span>ikgai</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div
                                 style={{
                                     width: "100%",
@@ -927,8 +1018,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             <span>Pending Rewards</span>
                                         </div>
                                         <div>
-                                            <span>3,020,900</span>
-                                            <span> ikgai</span>
+                                            <span>{expectedRewards?.toLocaleString()}</span>
+                                            {/* <span> ikgai</span> */}
                                         </div>
                                     </div>
                                 </div>
@@ -942,12 +1033,12 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         width: "100%",
                                         display: "flex",
                                         alignItems: "center",
-                                        justifyContent: "space-around",
-                                        flexWrap: "wrap",
+                                        justifyContent: "center",
+                                        // flexWrap: "wrap",
                                         borderTop: "1px solid #000000",
                                     }}
                                 >
-                                    <div style={{ paddingRight: "10px" }}>
+                                    <div style={{ paddingRight: "3px" }}>
                                         <AwesomeButton
                                             className="stake-aws-btn3"
                                             type="primary"
@@ -965,7 +1056,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             </span>
                                         </AwesomeButton>
                                     </div>
-                                    <div style={{ paddingRight: "10px" }}>
+                                    <div style={{ paddingRight: "3px" }}>
                                         <AwesomeButton
                                             className="stake-aws-btn3"
                                             type="secondary"
@@ -975,12 +1066,39 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                                 padding: 0,
                                             }}
                                             onPress={() => {
-                                                unStake();
+                                                if (adminBalance > 0) {
+                                                    unStake();
+                                                } else {
+                                                    alert("Insufficient Admin Balance")
+                                                }
                                             }}
-                                            disabled={isUnstakeDisabled}
+                                            disabled={isUnstaking || isUnstakeDisabled}
                                         >
                                             <span className="stake_main_font_style">
-                                                UNSTAKE
+                                                {isUnstaking ? "Unstaking..." : "UNSTAKE"}
+                                            </span>
+                                        </AwesomeButton>
+                                    </div>
+                                    <div style={{ paddingRight: "3px" }}>
+                                        <AwesomeButton
+                                            className="stake-aws-btn3"
+                                            type="secondary"
+                                            style={{
+                                                fontSize: "16px",
+                                                fontFamily: "KaoriGelBold",
+                                                padding: 0,
+                                            }}
+                                            onPress={() => {
+                                                if (adminBalance > 0) {
+                                                    claimReward();
+                                                } else {
+                                                    alert("Insufficient Admin Balance")
+                                                }
+                                            }}
+                                            disabled={isClaiming || expectedRewards === 0}
+                                        >
+                                            <span className="stake_main_font_style">
+                                                {isClaiming ? "CLAIMING..." : "CLAIM REWARD"}
                                             </span>
                                         </AwesomeButton>
                                     </div>
