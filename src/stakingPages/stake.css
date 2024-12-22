@@ -457,6 +457,11 @@ margin-right: 5px;
   margin: 0;
 }
 
+.admin-font{
+  margin-top: 30px;
+  margin-bottom: -30px;
+}
+
 .ikigai-font{
   font-size: 30px;
 }

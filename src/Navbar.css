@@ -7,6 +7,7 @@
 
 .menu.open {
     display: block;
+    margin-top: -30px;
 }
 
 .menu ul {

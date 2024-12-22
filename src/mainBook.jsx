@@ -9,17 +9,8 @@ import Footer from "./components/presentation/footer";
 import { useDarkMode } from "./provider/theme-provider";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Keypair } from "@solana/web3.js";
-import { adminKeyPair, stakingData } from "./utils/constants";
+import { stakingData } from "./utils/constants";
 
-// import Page6 from "./pages/roadMapRight";
-// import Page7 from "./pages/page7";
-// import Page5 from "./pages/roadMapLeft";
-// import Page8 from "./pages/page8";
-// import Page9 from "./pages/animation1";
-// import Page10 from "./pages/galleryImage1";
-// import BlankPageRight from "./pages/blackPageRight";
-// import ComicBlankRight from "./pages/comicBlankRight";
-// import BlankRight from "./pages/blankRight";
 const Page1 = React.lazy(() => import("./pages/page1"));
 const Page2 = React.lazy(() => import("./pages/page2"));
 const Page3 = React.lazy(() => import("./pages/page3"));
@@ -79,9 +70,7 @@ const RoadMapLeft = React.lazy(() => import("./pages/roadMapLeft"));
 const RoadMapRight = React.lazy(() => import("./pages/roadMapRight"));
 const AboutUsLeft = React.lazy(() => import("./pages/aboutUsLeft"));
 const ContactUs = React.lazy(() => import("./pages/contactUs"));
-const JumpingLeft = React.lazy(() => import("./pages/jumpingLeft"));
-const LearnBlankRight = React.lazy(() => import("./pages/learnBlankRight"));
-const MerchBlankRight = React.lazy(() => import("./pages/merchBlankRight"));
+
 const StakingPageLeft = React.lazy(() =>
   import("./stakingPages/stakingPageLeft")
 );
@@ -105,7 +94,8 @@ const MainBook = () => {
   const { isDarkModeEnabled } = useDarkMode();
   const { publicKey, connected } = useWallet();
   const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState()
-  const [isClaimed, setIsClaimed] = useState(false)
+  const [isClaimed, setIsClaimed] = useState(false);
+
   const handleAudio = () => {
     const audio = new Audio("/assets/page-flip-10.mp3"); // Adjust the path as necessary
     audio.play();
@@ -116,20 +106,16 @@ const MainBook = () => {
   const nextButtonClick = () => {
     flipBook.current.pageFlip().flipNext();
     setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
-    // flipBook.current.pageFlip().turnToPage(3);
-    // flipBook.current.pageFlip().flip(10, "top");
   };
+
   const prevButtonClick = () => {
     flipBook.current.pageFlip().flipPrev();
     setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
   };
 
-  // useEffect(() => {}, [flipBook]);
-
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    //choose the screen size
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setIsShrinkNav(true);
@@ -250,6 +236,14 @@ const MainBook = () => {
                 showPageCorners={false}
                 onFlip={(e) => {
                   console.log(e);
+                  // if(e.data === 60){
+                  //   setIsMusicPageRight(true);
+                  // }else if (e.data === 62){
+                  //   setIsAdminPageRight(true)
+                  // }else{
+                  //   setIsAdminPageRight(false);
+                  //   setIsMusicPageRight(false)
+                  // }
                 }}
                 flippingTime={1500}
               >
