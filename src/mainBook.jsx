@@ -102,12 +102,17 @@ const MainBook = () => {
   };
   const flipBook = useRef();
   const [isShrinkNav, setIsShrinkNav] = useState(false);
-  const [currentPage, setCurrentPage] = useState(40);
+  const [currentPage, setCurrentPage] = useState(0);
+  
   const nextButtonClick = () => {
+    const nextPageIndex = flipBook.current.pageFlip().getCurrentPageIndex() + 1;
+    if (nextPageIndex === 61 && !isAdminPanelEnabled) { 
+      return;
+    }
     flipBook.current.pageFlip().flipNext();
-    setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
+    setCurrentPage(flipBook.current.pageFlip().getCurrentPageIndex());
   };
-
+  
   const prevButtonClick = () => {
     flipBook.current.pageFlip().flipPrev();
     setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
@@ -212,6 +217,8 @@ const MainBook = () => {
           </>
         )}
 
+        {console.log({currentPage})}
+
         <div className={`book-cover ${!isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""}`} style={{ position: "relative" }}>
           <div style={{ width: "100%", height: "80%", position: "relative" }}>
             <div className="demo-book">
@@ -235,15 +242,8 @@ const MainBook = () => {
                 useMouseEvents={false}
                 showPageCorners={false}
                 onFlip={(e) => {
+                  // handleFlip(e)
                   console.log(e);
-                  // if(e.data === 60){
-                  //   setIsMusicPageRight(true);
-                  // }else if (e.data === 62){
-                  //   setIsAdminPageRight(true)
-                  // }else{
-                  //   setIsAdminPageRight(false);
-                  //   setIsMusicPageRight(false)
-                  // }
                 }}
                 flippingTime={1500}
               >
