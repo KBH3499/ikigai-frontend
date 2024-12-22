@@ -139,7 +139,7 @@
   font-family: ChelseaMarket-Regular;
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1450px) {
 
   .music-item {
     margin: 5%; /* Adjust margin for smaller screens */

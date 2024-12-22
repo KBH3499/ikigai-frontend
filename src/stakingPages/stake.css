@@ -15,7 +15,7 @@
   border: 2px solid black;
 }
 
-@media (max-width: 1400px){
+@media (max-width: 1450px){
   .stake_border{
     margin-top: 10px;
   }
@@ -472,7 +472,7 @@ margin-right: 5px;
   box-sizing: border-box;
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1450px) {
   .stake_main_title_content{
     font-size: 10px;
   }

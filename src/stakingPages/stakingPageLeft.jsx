@@ -9,7 +9,7 @@ import { WalletReadyState } from "@solana/wallet-adapter-base";
 import { useMediaQuery } from "react-responsive";
 
 const StakingPageLeft = React.forwardRef((props, ref) => {
-  const isMobile = useMediaQuery({ query: "(max-width: 1400px)" });
+  const isMobile = useMediaQuery({ query: "(max-width: 1450px)" });
   const isMobileSmall = useMediaQuery({ query: "(max-width: 768px)" });
   const [totalReward, setTotalReward] = useState()
   const [percentage, setPercentage] = useState(0); // Tracks the percentage dragged

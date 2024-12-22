@@ -384,7 +384,7 @@ code {
 }
 
 /* Responsive styling for tablets and medium-sized screens */
-@media (max-width: 1400px) {
+@media (max-width: 1450px) {
   .first_page_subtitle {
     font-size: 40px; /* Slightly smaller font for tablets */
     padding-top: 15px; /* Reduce padding */
@@ -1358,7 +1358,7 @@ code {
   pointer-events: none;
 }
 
-@media (max-width: 1400px){
+@media (max-width: 1450px){
   .idle-left {
     width: 65px;
     position: absolute;
