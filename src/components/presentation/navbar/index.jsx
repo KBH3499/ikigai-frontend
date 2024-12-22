@@ -32,7 +32,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
           style={{
             height: "100%",
             width: `${!isShrinkNav ? "100%" : "68%"}`,
-            // margin: isShrinkNav ? "auto" : "",
+            margin: isShrinkNav ? "auto" : "",
             justifyContent: isShrinkNav ? "space-between" : "center ",
           }}
         >
@@ -44,8 +44,12 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
           )}
 
           <div
-            style={{
-              // margin: isShrinkNav ? "" : "auto",
+            style={isShrinkNav ? {
+              margin: isShrinkNav ? "" : "auto",
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+            }: {
               position: "relative",
               display: "flex",
               alignItems: "center",

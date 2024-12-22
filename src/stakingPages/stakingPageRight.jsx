@@ -21,6 +21,7 @@ import {
 import idl from "../json/idl.json";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { adminKeyPair, stakingData } from "../utils/constants";
+import { useMediaQuery } from "react-responsive";
 
 const StakingPageRight = React.forwardRef((props, ref) => {
     const [isUnstakeVisible, setIsUnstakeVisible] = useState(false);
@@ -67,6 +68,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     const [userInfoPDA, setUserInfoPDA] = useState();
     const [poolInfoPDA, setPoolInfoPDA] = useState();
     const [tokenToMint, setTokenToMint] = useState();
+    const isMobileSmall = useMediaQuery({ query: "(max-width: 768px)" });
     const [isUnstakeDisabled, setIsUnstakeDisabled] = useState(false);
     const [selectedToken, setSelectedToken] = useState('ikigai');
     const [selectedTokenDetails, setSelectedTokenDetails] = useState(stakingData['ikigai']);
@@ -667,7 +669,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                         className="stake_border stake_main_font_style"
                         style={{
                             marginTop: "5%",
-                            height: "85%",
+                            height: isMobileSmall ? "95%" :"85%",
                             width: "100%",
                             display: "flex",
                             flexDirection: "column",
@@ -1029,12 +1031,13 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                             <>
                                 <div
                                     style={{
-                                        height: "80px",
+                                        height: isMobileSmall ? "180px" :"80px",
                                         width: "100%",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        // flexWrap: "wrap",
+                                        flexDirection: isMobileSmall ? "column" :"",
+                                        flexWrap: isMobileSmall ? "wrap": "",
                                         borderTop: "1px solid #000000",
                                     }}
                                 >

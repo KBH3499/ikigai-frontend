@@ -131,17 +131,18 @@ const AdminPageRight = React.forwardRef((props, ref) => {
   return (
 
     <div className={`demoPage comic_background_white_right ${props?.isMobile ? "" : "center_div"}`} ref={ref}>
-      <div className="admin-form "><h1 className="font">Update Pool</h1>
+      <div className="admin-form"><h1 className="font admin-font">Update Pool</h1>
         <div className="contact_us_canvas">
           <div style={{ padding: "0.5vh" }}>
-            <select className="input_form_element" onChange={handleSelectedToken}>
+            <select className="input_form_element_select" onChange={handleSelectedToken}>
+            {/* <select className="input_form_element" onChange={handleSelectedToken}> */}
               <option>Select Token</option>
               <option>ikigai</option>
               <option>tyke</option>
             </select>
           </div>
           <div style={{ padding: "0.5vh" }}>
-            <select className="input_form_element" onChange={handleSelectedPool}>
+            <select className="input_form_element_select" onChange={handleSelectedPool}>
               <option>Select Pool</option>
               <option>1 Month</option>
               <option>3 Month</option>
@@ -151,22 +152,22 @@ const AdminPageRight = React.forwardRef((props, ref) => {
           </div>
           <div style={{ padding: "0.5vh" }}>
             <input
-              className="input_form_element"
-              placeholder="Pool Stake Size"
+              className="input_form_element_data"
+              placeholder="Pool Size"
               type="number"
               onChange={handlePoolStakeChange}
             />
           </div>
           <div style={{ padding: "0.5vh" }}>
             <input
-              className="input_form_element"
-              placeholder="User Stake Limit"
+              className="input_form_element_data"
+              placeholder="Stake Limit"
               type="number"
               onChange={handleUserStakeLimitChange}
             />
             <div style={{ padding: "0.5vh" }}>
               <input
-                className="input_form_element"
+                className="input_form_element_data"
                 placeholder="Lock Period"
                 type="number"
                 onChange={handleLockPeriodChange}
@@ -175,8 +176,8 @@ const AdminPageRight = React.forwardRef((props, ref) => {
           </div>
           <div style={{ padding: "0.5vh" }}>
             <input
-              className="input_form_element"
-              placeholder="Reward Percentage"
+              className="input_form_element_data"
+              placeholder="Reward %"
               type="number"
               onChange={handleRewardPercentageChange}
             />
@@ -184,14 +185,15 @@ const AdminPageRight = React.forwardRef((props, ref) => {
           <div style={{ width: "100%", padding: "10px" }}>
             <button
               onClick={updatePool}
-              className="submit_button"
+              className="submit_button_admin"
               type="submit"
               style={{
                 textDecoration: "none",
                 width: "100%",
                 height: "100%",
                 cursor: isSubmitting ? "not-allowed" : "pointer",
-                opacity: isSubmitting ? 0.5 : 1
+                opacity: isSubmitting ? 0.5 : 1,
+                marginLeft: -30
               }}
               disabled={isSubmitting}
             >

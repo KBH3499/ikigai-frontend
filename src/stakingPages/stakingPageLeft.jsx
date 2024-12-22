@@ -10,6 +10,7 @@ import { useMediaQuery } from "react-responsive";
 
 const StakingPageLeft = React.forwardRef((props, ref) => {
   const isMobile = useMediaQuery({ query: "(max-width: 1400px)" });
+  const isMobileSmall = useMediaQuery({ query: "(max-width: 768px)" });
   const [totalReward, setTotalReward] = useState()
   const [percentage, setPercentage] = useState(0); // Tracks the percentage dragged
   const [isDisConnecting, setIsDisConnecting] = useState(false);
@@ -110,7 +111,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
           paddingRight: "5%",
         }}
       >
-        <div style={{ height: "30%", width: "100%", display: "flex" }}>
+        <div style={{ height: isMobileSmall ? "20%" :"30%", width: "100%", display: "flex" }}>
           <div
             className="stake_main_font_style stake_flex_align_center"
             style={{ textAlign: "start", margin: "0", flex: "80%" }}
