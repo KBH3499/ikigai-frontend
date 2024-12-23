@@ -35,7 +35,6 @@ const ContactUs = React.forwardRef((props, ref) => {
         email,
         message,
       });
-      // console.log("Response:", response.data);
       // Clear form and errors if needed
       setName("");
       setEmail("");

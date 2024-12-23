@@ -78,6 +78,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     const [isStaking, setIsStaking] = useState(false);
     const [expectedRewards, setExpectedRewards] = useState()
     const [adminBalance, setAdminBalance] = useState(false);
+    const [isLockDownEnded, setIsLockDownEnded] = useState(false);
+    const [isLockEndDate, setIsLockEndDate] = useState(false);
+    const [userLimit, setUserLimit] = useState(0);
     const network = WalletAdapterNetwork.Devnet;
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
     const [currentProgram, setCurrentProgram] = useState()
@@ -114,6 +117,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             )[0];
             setUserInfoPDA(userinfoPDA);
             setPoolInfoPDA(poolinfoPDA);
+        }else{
+            setExpectedRewards(0)
         }
     }, [connected, currentProgram]);
 
@@ -131,34 +136,11 @@ const StakingPageRight = React.forwardRef((props, ref) => {
         }
     };
 
-    // const admin = new PublicKey("DG6ZWtgMqYo4P9wsjF5vetosPZmthk33AxJCgeBEY7nr");
-    // const adminKeyPair = Keypair.fromSeed(admin?.toBytes());
-    // const poolInfo = new PublicKey(
-    //     "FjT1Wwp3scx1x4bCnVpGyAUoPDMT1GVmAu2VAGzT16hB",
-    // );
-    // const poolKeyPair = Keypair.fromSeed(poolInfo?.toBytes());
-    // const stakingTokenMint = new PublicKey(
-    //     "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
-    // );
-    // const userInfo =
-    //     JSON.parse(localStorage.getItem("userInfo")) ?? Keypair.generate();
-    // // localStorage.setItem("userInfo", JSON.stringify(userInfo))
-    // const publicKeyArray = Uint8Array.from(
-    //     Object.values(userInfo._keypair.publicKey),
-    // );
-    // const secretKeyArray = Uint8Array.from(
-    //     Object.values(userInfo._keypair.secretKey),
-    // );
-    // const publicKey = new PublicKey(publicKeyArray);
-    // const _keypair = {
-    //     publicKey: publicKey,
-    //     secretKey: secretKeyArray,
-    // };
-    // const publicAddress = publicKey.toBase58();
-    // console.log({ publicAddress });
-
     const handleInput = (e) => {
-        setStakeAmount(Number(e.target.value));
+        const value = Number(e?.target?.value);
+        if(value <= userLimit){
+            setStakeAmount(Number(e.target.value));
+        }
     };
 
     const getCurrentFormattedDate = () => {
@@ -208,37 +190,112 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     }, [stakeDuration]);
 
     useEffect(() => {
-        if (userInfoPDA) {
+        if (userInfoPDA && connected) {
             getUserInfo();
         }
         setStartDateApproval(getCurrentFormattedDate());
-    }, [userInfoPDA]);
+    }, [userInfoPDA, stakeDuration, connected ]);
 
     useEffect(() => {
         setRedDateApproval(getRedemtionFormattedDate(stakeDuration));
     }, [stakeDuration]);
 
+    const hasLockPeriodEnded = (timestamp, lockPeriod) => {
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        return currentTimestamp > timestamp + lockPeriod;
+    }
+
+    const getLockEndDate = (timestamp, lockPeriod) => {
+        const targetTimestamp = timestamp + lockPeriod; // Add one day
+        const date = new Date(targetTimestamp * 1000); // Convert to milliseconds for Date object
+    
+        // Format the date and time
+        const formattedDate = date.toLocaleString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+        });
+    
+        return formattedDate;
+    }
+
     const getUserInfo = async () => {
         try {
-            
             const userInfoData = await currentProgram.account.userInfo.fetch(userInfoPDA);
+            const poolInfoData = await currentProgram.account.poolInfo.fetch(poolInfoPDA);
+
+            const keyValuePairs = poolInfoData?.keyValuePairs[stakeDuration];
+            const stakeLimit = (keyValuePairs.userLimit.toNumber() - userInfoData?.amount?.toNumber()) / 1e9
+            setUserLimit(stakeLimit)
+
+            // if (keyValuePairs && Array.isArray(keyValuePairs)) {
+            //     // Define the target lockSeconds value you want to fetch
+            //     const targetLockSeconds = userInfoData?.lockPeriod?.toString(); // Replace with your desired value
+            
+            //     // Filter the keyValuePairs array
+            //     const filteredPairs = keyValuePairs.filter(pair =>
+            //         pair.lockSeconds.toString() === targetLockSeconds
+            //     );
+            
+            //     // console.log(`Filtered keyValuePairs with lockSeconds = ${targetLockSeconds}:`, filteredPairs.map(pair => ({
+            //     //     lockSeconds: pair.lockSeconds.toString(),
+            //     //     poolSize: pair.poolSize.toString(),
+            //     //     userLimit: pair.userLimit.toString(),
+            //     //     rewardPercentage: pair.rewardPercentage.toString(),
+            //     // })));
+            //     const stakeLimit = (filteredPairs[0]?.userLimit.toNumber() - userInfoData?.amount?.toNumber()) / 1e9
+            //     setUserLimit(stakeLimit)
+            // } else {
+            //     console.log("keyValuePairs is not an array or is undefined.");
+            // }
+            
+            console.log({
+                poolInfoData: {
+                    admin: poolInfoData?.admin?.toString(),
+                    keyValuePairs:{
+                        lockSeconds: keyValuePairs.lockSeconds.toString(),
+                        poolSize: keyValuePairs.poolSize.toString(),
+                        userLimit: keyValuePairs.userLimit.toString(),
+                        rewardPercentage: keyValuePairs.rewardPercentage.toString(),
+                    },
+                    token: poolInfoData?.token?.toString(),
+                    totalStaked: poolInfoData?.totalStaked?.toString(),
+                },
+            });
+            console.log({
+                userInfoData: {
+                    amount: userInfoData?.amount?.toString(),
+                    depositTimestamp: userInfoData?.depositTimestamp?.toString(),
+                    lockPeriod: userInfoData?.lockPeriod?.toString(),
+                    rewardDebt: userInfoData?.rewardDebt?.toString(),
+                    rewardPercentage: userInfoData?.rewardPercentage?.toString(),
+                }
+            })
             if (userInfoData?.amount?.toNumber() === 0) {
                 setIsUnstakeDisabled(true);
             } else {
                 setIsUnstakeDisabled(false);
             }
-            
+
+            const hasTimePassed = hasLockPeriodEnded(userInfoData?.depositTimestamp?.toNumber(), userInfoData?.lockPeriod?.toNumber())
+            const lockEndDate = getLockEndDate(userInfoData?.depositTimestamp?.toNumber(), userInfoData?.lockPeriod?.toNumber());
+            setIsLockDownEnded(hasTimePassed);
+            setIsLockEndDate(lockEndDate)
             const stakeAmount = userInfoData.amount.toNumber() / 1e9;
             const rewardPercentage = userInfoData.rewardPercentage.toNumber()
             const lockSeconds = userInfoData.lockPeriod.toNumber()
             const expectedReward = (stakeAmount * rewardPercentage * lockSeconds) / (100 * lockSeconds);
             const claimedRewards = userInfoData.rewardDebt.toNumber() / 1e9;
             setExpectedRewards(isNaN(expectedReward) ? 0 : expectedReward)
-            localStorage.setItem("expectedReward", isNaN(expectedReward) ? 0 : expectedReward)
-            localStorage.setItem("claimedRewards", claimedRewards)
+            props.setTotalReward(claimedRewards)
         } catch (error) {
             setExpectedRewards(0)
             setIsUnstakeDisabled(true);
+            console.log(error)
         }
     };
 
@@ -302,48 +359,55 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
     const unStake = async () => {
         try {
-            setIsUnstaking(true);
+            if (!isLockDownEnded) {
+                alert(`OOPS!! you cannot UNSTAKE your tokens before ${isLockEndDate}`);
+                return
+            } else {
 
-            const userWallet = provider.wallet.publicKey;
+                setIsUnstaking(true);
 
-            const userStakingWallet = await getOrCreateAssociatedTokenAccount(
-                connection,
-                userWallet,
-                tokenToMint,
-                userWallet,
-            );
+                const userWallet = provider.wallet.publicKey;
 
-            const adminTokenAccount = await getOrCreateAssociatedTokenAccount(
-                connection,
-                selectedTokenDetails.admin,
-                tokenToMint,
-                selectedTokenDetails.admin.publicKey,
-            );
+                const userStakingWallet = await getOrCreateAssociatedTokenAccount(
+                    connection,
+                    userWallet,
+                    tokenToMint,
+                    userWallet,
+                );
 
-            const accounts = {
-                user: userWallet,
-                admin: selectedTokenDetails.admin.publicKey,
-                userInfo: userInfoPDA,
-                userStakingWallet: userStakingWallet.address,
-                adminStakingWallet: adminTokenAccount.address,
-                stakingToken: tokenToMint,
-                poolInfo: poolInfoPDA,
-                tokenProgram: TOKEN_PROGRAM_ID,
-                systemProgram: SystemProgram.programId,
-            };
+                const adminTokenAccount = await getOrCreateAssociatedTokenAccount(
+                    connection,
+                    selectedTokenDetails.admin,
+                    tokenToMint,
+                    selectedTokenDetails.admin.publicKey,
+                );
 
-            const tx = await currentProgram.methods
-                .unstake()
-                .accounts(accounts)
-                .signers([selectedTokenDetails.admin])
-                .rpc();
+                const accounts = {
+                    user: userWallet,
+                    admin: selectedTokenDetails.admin.publicKey,
+                    userInfo: userInfoPDA,
+                    userStakingWallet: userStakingWallet.address,
+                    adminStakingWallet: adminTokenAccount.address,
+                    stakingToken: tokenToMint,
+                    poolInfo: poolInfoPDA,
+                    tokenProgram: TOKEN_PROGRAM_ID,
+                    systemProgram: SystemProgram.programId,
+                };
 
-            console.log("Stake transaction successful:", tx);
-            if (tx) {
-                alert("Successfully Unstaked");
-                getUserInfo();
-                setIsUnstaking(false);
+                const tx = await currentProgram.methods
+                    .unstake()
+                    .accounts(accounts)
+                    .signers([selectedTokenDetails.admin])
+                    .rpc();
+
+                console.log("Stake transaction successful:", tx);
+                if (tx) {
+                    alert("Successfully Unstaked");
+                    getUserInfo();
+                    setIsUnstaking(false);
+                }
             }
+
         } catch (error) {
             setIsUnstaking(false);
             alert(error.message);
@@ -524,7 +588,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         <br />
                                         <span style={{ fontSize: "12px" }}>
                                             {stakeDuration < 12
-                                                ? stakeDuration
+                                                ? stakeDuration === 2? 3 : stakeDuration === 3 ? 6 : 1
                                                 : 1}{" "}
                                             {stakeDuration < 12
                                                 ? "MONTH"
@@ -669,7 +733,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                         className="stake_border stake_main_font_style"
                         style={{
                             marginTop: "5%",
-                            height: isMobileSmall ? "95%" :"85%",
+                            height: isMobileSmall ? "95%" : "85%",
                             width: "100%",
                             display: "flex",
                             flexDirection: "column",
@@ -1031,13 +1095,13 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                             <>
                                 <div
                                     style={{
-                                        height: isMobileSmall ? "180px" :"80px",
+                                        height: isMobileSmall ? "180px" : "80px",
                                         width: "100%",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        flexDirection: isMobileSmall ? "column" :"",
-                                        flexWrap: isMobileSmall ? "wrap": "",
+                                        flexDirection: isMobileSmall ? "column" : "",
+                                        flexWrap: isMobileSmall ? "wrap" : "",
                                         borderTop: "1px solid #000000",
                                     }}
                                 >
@@ -1158,10 +1222,14 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                     <div>
                                         <input
                                             onChange={handleInput}
-                                            value={stakeAmount?.toString()}
+                                            value={stakeAmount > 0 ? stakeAmount : ""}
                                             className="stake_stake_amount"
                                             placeholder="Please, insert amount of stake."
+                                            type="number"
                                         ></input>
+                                    </div>
+                                    <div>
+                                        Stake Limit : {userLimit}
                                     </div>
                                     <div
                                         className="stake_stake_auto_compounding_select"
@@ -1208,11 +1276,11 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             padding: 0,
                                         }}
                                         onPress={() => {
-                                            // OpenTransactionConfirming();
                                             askApproval();
                                             closeStakeComponent();
                                             setIsStakeConfirmed(true);
                                         }}
+                                        disabled={stakeAmount === 0 || stakeAmount === '' || stakeAmount < 0}
                                     >
                                         <span className="stake_main_font_style">
                                             STAKE IKIGAI

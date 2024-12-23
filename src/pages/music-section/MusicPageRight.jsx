@@ -13,10 +13,6 @@ const MusicPageRight = React.forwardRef((props, ref) => {
     handleNextSong,
     handlePlayPause}=useMusicPlayer();
   const buttonType=isDarkModeEnabled ? "facebook" : "primary";
-  console.log({ref: ref.current})
-  // Get the current song
-//   const currentSong = musicList[songIndex];
-//   const audioSrc = `${basePath}/${currentSong?.audioSrc}`;
     
   return (
     <div className={`demoPage comic_background_white_right ${props?.isMobile ? "": "center_div"}`} ref={ref}>

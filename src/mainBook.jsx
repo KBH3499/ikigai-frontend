@@ -95,7 +95,8 @@ const MainBook = () => {
   const { publicKey, connected } = useWallet();
   const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState()
   const [isClaimed, setIsClaimed] = useState(false);
-
+  const [totalReward, setTotalReward] = useState(0)
+  
   const handleAudio = () => {
     const audio = new Audio("/assets/page-flip-10.mp3"); // Adjust the path as necessary
     audio.play();
@@ -144,10 +145,8 @@ const MainBook = () => {
       const temporaryAdminPublicKey = temporaryAdmin?.publicKey?.toString();
       if (temporaryAdminPublicKey === stakingData['ikigai']?.admin?.publicKey?.toString() || temporaryAdminPublicKey === stakingData['tyke']?.admin?.publicKey?.toString()) {
         setIsAdminPanelEnabled(true);
-        console.log("Connected Wallet is Admin", temporaryAdminPublicKey);
       } else {
         setIsAdminPanelEnabled(false);
-        console.log("Connected Wallet is Not Admin", temporaryAdminPublicKey);
       }
     }else{
       setIsAdminPanelEnabled(false);
@@ -217,8 +216,6 @@ const MainBook = () => {
           </>
         )}
 
-        {console.log({currentPage})}
-
         <div className={`book-cover ${!isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""}`} style={{ position: "relative" }}>
           <div style={{ width: "100%", height: "80%", position: "relative" }}>
             <div className="demo-book">
@@ -241,10 +238,7 @@ const MainBook = () => {
                 ref={flipBook}
                 useMouseEvents={false}
                 showPageCorners={false}
-                onFlip={(e) => {
-                  // handleFlip(e)
-                  console.log(e);
-                }}
+                onFlip={(e) => {}}
                 flippingTime={1500}
               >
                 <HomeLeft />
@@ -305,8 +299,8 @@ const MainBook = () => {
                 <Page16 pageNumber={currentPage} />
                 <LearningLeft />
                 <LearningRight />
-                <StakingPageLeft isClaimed={isClaimed} />
-                <StakingPageRight setIsClaimed={setIsClaimed} />
+                <StakingPageLeft isClaimed={isClaimed} totalReward={totalReward} />
+                <StakingPageRight setIsClaimed={setIsClaimed} setTotalReward={setTotalReward} />
                 <MusicPageLeft />
                 <MusicPageRight isMobile={isMobile} />
                 <AdminPageLeft />

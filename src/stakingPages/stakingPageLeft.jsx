@@ -11,7 +11,7 @@ import { useMediaQuery } from "react-responsive";
 const StakingPageLeft = React.forwardRef((props, ref) => {
   const isMobile = useMediaQuery({ query: "(max-width: 1400px)" });
   const isMobileSmall = useMediaQuery({ query: "(max-width: 768px)" });
-  const [totalReward, setTotalReward] = useState()
+  // const [totalReward, setTotalReward] = useState()
   const [percentage, setPercentage] = useState(0); // Tracks the percentage dragged
   const [isDisConnecting, setIsDisConnecting] = useState(false);
   const lineRef = useRef(null); // Reference to the line
@@ -59,7 +59,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
       }
 
       select(phantomWallet.adapter.name);
-      console.log(2222222);
+
       await connect();
 
     } catch (error) {
@@ -92,10 +92,11 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
     }
   }, [connected]);
 
-  useEffect(()=>{
-    const expectedReward = localStorage?.getItem("claimedRewards")
-    setTotalReward(expectedReward ?? 0)
-  },[props.isClaimed])
+  // useEffect(()=>{
+  //   const expectedReward = localStorage?.getItem("claimedRewards")
+  //   console.log({expectedReward})
+  //   setTotalReward(expectedReward ?? 0)
+  // },[props.isClaimed, connected])
 
   return (
     <div
@@ -164,9 +165,6 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   <AwesomeButton
                     className="stake-aws-btn"
                     type="primary"
-                    onPress={() => {
-                      console.log("invite friends");
-                    }}
                   >
                     <div style={{ padding: 3, marginTop: 3 }}>
                       <svg
@@ -201,9 +199,6 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       fontFamily: "KaoriGelBold",
                       padding: 0,
                     }}
-                    onPress={() => {
-                      console.log("invite friends");
-                    }}
                   >
                     <div style={{ marginTop: 10 }}>
                       <svg
@@ -232,9 +227,6 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       fontSize: "8px",
                       fontFamily: "KaoriGelBold",
                       padding: 0,
-                    }}
-                    onPress={() => {
-                      console.log("invite friends");
                     }}
                   >
                     <svg
@@ -272,9 +264,6 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       fontSize: "8px",
                       fontFamily: "KaoriGelBold",
                       padding: 0,
-                    }}
-                    onPress={() => {
-                      console.log("invite friends");
                     }}
                   >
                     <svg
@@ -320,10 +309,10 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     className="stake_main_font_style"
                     style={{ fontSize: isMobile ? "25px" : "30px" }}
                   >
-                    {totalReward}
+                    {props.totalReward}
                   </span>
                 </div>
-                <div>
+                {/* <div>
                   <span
                     className="stake_main_font_style"
                     style={{
@@ -333,7 +322,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   >
                     20.33$
                   </span>
-                </div>
+                </div> */}
               </div>
               }
               {isMobile && connected &&
@@ -354,7 +343,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     {totalReward}
                     </span>
 
-
+{/* 
                   <span
                     className="stake_main_font_style"
                     style={{
@@ -363,7 +352,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     }}
                   >
                     20.33$
-                  </span>
+                  </span> */}
                 </div>
               }
               {/* {isWalletConnected && <div style={{ display: "flex" }}>
@@ -440,10 +429,8 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     if (!isWalletConnected) {
                       openWalletConnect();
                     } else {
-                      console.log("hres");
                       handleDisconnect();
                     }
-                    console.log("invite friends");
                   }}
                   disabled={isDisConnecting}
                 >
@@ -749,13 +736,6 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                         fontFamily: "KaoriGelBold",
                         padding: 0,
                       }}
-                      // onPress={() => {
-                      //   closeWalletConnect();
-                      //   openWalletConnectConfirming();
-                      //   connectedWallet();
-                      //   console.log("approve button clicked");
-
-                      // }}
                       onPress={handleConnect}
                       disabled={connecting}
                     >
