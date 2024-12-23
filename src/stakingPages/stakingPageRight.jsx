@@ -84,6 +84,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     const network = WalletAdapterNetwork.Devnet;
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
     const [currentProgram, setCurrentProgram] = useState()
+    const [totalStaked, setTotalStaked] = useState()
 
     const opts = { preflightCommitment: "processed" };
 
@@ -291,6 +292,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             const expectedReward = (stakeAmount * rewardPercentage * lockSeconds) / (100 * lockSeconds);
             const claimedRewards = userInfoData.rewardDebt.toNumber() / 1e9;
             setExpectedRewards(isNaN(expectedReward) ? 0 : expectedReward)
+            setTotalStaked( userInfoData?.amount?.toNumber() / 1e9)
             props.setTotalReward(claimedRewards)
         } catch (error) {
             setExpectedRewards(0)
@@ -1078,6 +1080,17 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                     </div>
                   </div>
                 </div> */}
+                                <div className="stake_flex_align_center stake_border stake_pending_reward">
+                                    <div>
+                                        <div>
+                                            <span>Total Staked</span>
+                                        </div>
+                                        <div>
+                                            <span>{totalStaked?.toLocaleString()}</span>
+                                            {/* <span> ikgai</span> */}
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="stake_flex_align_center stake_border stake_pending_reward">
                                     <div>
                                         <div>
