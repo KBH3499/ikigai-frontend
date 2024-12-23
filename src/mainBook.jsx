@@ -105,22 +105,22 @@ const MainBook = () => {
   const [isShrinkNav, setIsShrinkNav] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   
+  
+  const prevButtonClick = () => {
+    flipBook.current.pageFlip().flipPrev();
+    setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
+  };
+  
+  const [isMobile, setIsMobile] = useState(false);
   const nextButtonClick = () => {
     const nextPageIndex = flipBook.current.pageFlip().getCurrentPageIndex() + 1;
-    if (nextPageIndex === 61 && !isAdminPanelEnabled) { 
+    if ((nextPageIndex === 61 || (isMobile && nextPageIndex === 62)) && !isAdminPanelEnabled) { 
       return;
     }
     flipBook.current.pageFlip().flipNext();
     setCurrentPage(flipBook.current.pageFlip().getCurrentPageIndex());
   };
   
-  const prevButtonClick = () => {
-    flipBook.current.pageFlip().flipPrev();
-    setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
-  };
-
-  const [isMobile, setIsMobile] = useState(false);
-
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
