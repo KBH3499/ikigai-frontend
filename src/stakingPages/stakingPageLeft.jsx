@@ -340,10 +340,10 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     className="stake_main_font_style"
                     style={{ fontSize: "17px" }}
                   >
-                    {totalReward}
+                    {props.totalReward}
                     </span>
 
-{/* 
+{/*
                   <span
                     className="stake_main_font_style"
                     style={{
