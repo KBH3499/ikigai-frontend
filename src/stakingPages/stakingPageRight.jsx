@@ -22,6 +22,7 @@ import idl from "../json/idl.json";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { adminKeyPair, stakingData } from "../utils/constants";
 import { useMediaQuery } from "react-responsive";
+import { toast } from "react-toastify";
 
 const StakingPageRight = React.forwardRef((props, ref) => {
     const [isUnstakeVisible, setIsUnstakeVisible] = useState(false);
@@ -115,7 +116,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
     useEffect(() => {
         if (connected && currentProgram) {
-            fetchBalance();
+            fetchUserTokenBalance()
             fetchTokenBalance();
             const userinfoPDA = PublicKey.findProgramAddressSync(
                 [Buffer.from("user_info"), publicKey?.toBuffer()],
@@ -130,6 +131,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             setPoolInfoPDA(poolinfoPDA);
         } else {
             setExpectedRewards(0);
+            setBalance(0)
         }
     }, [connected, currentProgram]);
 
@@ -147,14 +149,28 @@ const StakingPageRight = React.forwardRef((props, ref) => {
         }
     };
 
-    const fetchBalance = async () => {
+    const fetchUserTokenBalance = async () => {
         try {
             const userWallet = new PublicKey(publicKey);
-            const balanceInLamports = await connection.getBalance(userWallet);
-            const balanceInSol = balanceInLamports / 1e9;
-            setBalance(balanceInSol);
+            const mintPublicKey = tokenToMint;
+    
+            const tokenAccounts = await connection.getParsedTokenAccountsByOwner(userWallet, {
+                programId: TOKEN_PROGRAM_ID,
+            });
+    
+            const tokenAccount = tokenAccounts.value.find((account) => {
+                const parsedAccountInfo = account.account.data.parsed.info;
+                return parsedAccountInfo.mint === mintPublicKey.toString();
+            });
+    
+            if (tokenAccount) {
+                const tokenBalance = tokenAccount.account.data.parsed.info.tokenAmount.uiAmount;
+                setBalance(tokenBalance); // Update your state or handle the balance
+            } else {
+                setBalance(0);
+            }
         } catch (error) {
-            console.error("Error fetching balance:", error);
+            console.error("Error fetching token balance:", error);
         }
     };
 
@@ -254,7 +270,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                 poolInfoPDA,
             );
 
-            const keyValuePairs = poolInfoData?.keyValuePairs[stakeDuration];
+            console.log({poolInfoPDA:poolInfoPDA?.toString()})
+
+            const keyValuePairs = poolInfoData?.keyValuePairs[stakeDuration - 1];
             const stakeLimit =
                 (keyValuePairs.userLimit.toNumber() -
                     userInfoData?.amount?.toNumber()) /
@@ -372,9 +390,25 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                 systemProgram: SystemProgram.programId,
             };
 
+
+
             const time = new BN(stakeDuration);
             const dynamicValue = `${stakeAmount}e9`;
             const bnAmount = new BN(Number(dynamicValue));
+
+            console.log({
+                time: time?.toString(),
+                bnAmount: bnAmount?.toString(),
+                user: userWallet?.toString(),
+                admin: selectedTokenDetails.admin.publicKey?.toString(),
+                userInfo: userInfoPDA?.toString(),
+                userStakingWallet: userStakingWallet.address?.toString(),
+                adminStakingWallet: adminTokenAccount.address?.toString(),
+                stakingToken: tokenToMint?.toString(),
+                poolInfo: poolInfoPDA?.toString(),
+                tokenProgram: TOKEN_PROGRAM_ID?.toString(),
+                systemProgram: SystemProgram.programId?.toString()
+            })
 
             const tx = await currentProgram.methods
                 .stake(time, bnAmount)
@@ -390,9 +424,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                 setIsStaking(false);
             }
 
-            alert("Successfully Staked");
+            toast("Successfully Staked");
         } catch (error) {
-            alert(error.message);
+            toast(error.message);
             setIsStaking(false);
             console.error("Error staking tokens:", error);
         }
@@ -401,7 +435,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     const unStake = async () => {
         try {
             if (!isLockDownEnded) {
-                alert(
+                toast(
                     `OOPS!! you cannot UNSTAKE your tokens before ${isLockEndDate}`,
                 );
                 return;
@@ -446,14 +480,14 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
                 console.log("Stake transaction successful:", tx);
                 if (tx) {
-                    alert("Successfully Unstaked");
+                    toast("Successfully Unstaked");
                     getUserInfo();
                     setIsUnstaking(false);
                 }
             }
         } catch (error) {
             setIsUnstaking(false);
-            alert(error.message);
+            toast(error.message);
             console.error("Error staking tokens:", error);
         }
     };
@@ -499,13 +533,13 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                 setIsClaiming(false);
                 props.setIsClaimed(true);
                 getUserInfo();
-                alert("Successfully Claimed");
+                toast("Successfully Claimed");
             }
         } catch (error) {
             setIsClaiming(false);
             props.setIsClaimed(false);
             console.error("Error staking tokens:", error);
-            alert(error.message);
+            toast(error.message);
         }
     };
 
@@ -805,8 +839,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                             >
                                 <div
                                     className={`stake_pool_element ${stakeDuration === 1
-                                            ? "selected-pool"
-                                            : ""
+                                        ? "selected-pool"
+                                        : ""
                                         }`}
                                     style={{
                                         position: "relative",
@@ -829,8 +863,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                     </div>
                                     <div
                                         className={`stake_pool_ticket ${stakeDuration === 1
-                                                ? "stake_pool_ticket_show"
-                                                : ""
+                                            ? "stake_pool_ticket_show"
+                                            : ""
                                             }`}
                                         style={{
                                             border: "1px solid #018790",
@@ -848,8 +882,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                 </div>
                                 <div
                                     className={`stake_pool_element ${stakeDuration === 2
-                                            ? "selected-pool"
-                                            : ""
+                                        ? "selected-pool"
+                                        : ""
                                         }`}
                                     style={{
                                         position: "relative",
@@ -872,8 +906,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                     </div>
                                     <div
                                         className={`stake_pool_ticket ${stakeDuration === 2
-                                                ? "stake_pool_ticket_show"
-                                                : ""
+                                            ? "stake_pool_ticket_show"
+                                            : ""
                                             }`}
                                         style={{
                                             border: "1px solid #018790",
@@ -891,8 +925,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                 </div>
                                 <div
                                     className={`stake_pool_element ${stakeDuration === 3
-                                            ? "selected-pool"
-                                            : ""
+                                        ? "selected-pool"
+                                        : ""
                                         }`}
                                     style={{
                                         position: "relative",
@@ -915,8 +949,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                     </div>
                                     <div
                                         className={`stake_pool_ticket ${stakeDuration === 3
-                                                ? "stake_pool_ticket_show"
-                                                : ""
+                                            ? "stake_pool_ticket_show"
+                                            : ""
                                             }`}
                                         style={{
                                             border: "1px solid #018790",
@@ -934,8 +968,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                 </div>
                                 <div
                                     className={`stake_pool_element ${stakeDuration === 4
-                                            ? "selected-pool"
-                                            : ""
+                                        ? "selected-pool"
+                                        : ""
                                         }`}
                                     style={{
                                         position: "relative",
@@ -958,8 +992,8 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                     </div>
                                     <div
                                         className={`stake_pool_ticket ${stakeDuration === 4
-                                                ? "stake_pool_ticket_show"
-                                                : ""
+                                            ? "stake_pool_ticket_show"
+                                            : ""
                                             }`}
                                         style={{
                                             border: "1px solid #018790",
@@ -1157,7 +1191,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                     </div>
                   </div>
                 </div> */}
-                                <div className="stake_flex_align_center stake_border stake_pending_reward">
+                                {connected && <><div className="stake_flex_align_center stake_border stake_pending_reward">
                                     <div>
                                         <div>
                                             <span>Total Staked</span>
@@ -1170,19 +1204,19 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="stake_flex_align_center stake_border stake_pending_reward">
-                                    <div>
+                                    <div className="stake_flex_align_center stake_border stake_pending_reward">
                                         <div>
-                                            <span>Pending Rewards</span>
+                                            <div>
+                                                <span>Pending Rewards</span>
+                                            </div>
+                                            <div>
+                                                <span>
+                                                    {expectedRewards?.toLocaleString()}
+                                                </span>
+                                                {/* <span> ikgai</span> */}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <span>
-                                                {expectedRewards?.toLocaleString()}
-                                            </span>
-                                            {/* <span> ikgai</span> */}
-                                        </div>
-                                    </div>
-                                </div>
+                                    </div></>}
                             </div>
                         </div>
                         {connected && (
@@ -1234,7 +1268,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                                 if (adminBalance > 0) {
                                                     unStake();
                                                 } else {
-                                                    alert(
+                                                    toast(
                                                         "Insufficient Admin Balance",
                                                     );
                                                 }
@@ -1263,7 +1297,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                                 if (adminBalance > 0) {
                                                     claimReward();
                                                 } else {
-                                                    alert(
+                                                    toast(
                                                         "Insufficient Admin Balance",
                                                     );
                                                 }
@@ -1343,9 +1377,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             type="number"
                                         ></input>
                                     </div>
-                                    <div style={{display: "flex", flexDirection: "column", gap: 6, marginTop: 10}}>
-                                    <div>Stake Limit : {userLimit}</div>
-                                    <div>Balance : {balance}</div>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
+                                        <div>Stake Limit : {userLimit}</div>
+                                        <div>Balance : {balance?.toLocaleString("en-US")}</div>
 
                                     </div>
                                     <div

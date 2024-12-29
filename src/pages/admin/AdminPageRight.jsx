@@ -97,6 +97,17 @@ const AdminPageRight = React.forwardRef((props, ref) => {
         userLimit: userStakeLimit,
         rewardPercentage: rewardPercentage,
       }
+
+      console.log({
+        index,
+        newDetail:{
+          lockPeriod:lockPeriod?.toString(),
+          poolSize: poolStakeSize?.toString(),
+          userLimit: userStakeLimit?.toString(),
+          rewardPercentage: rewardPercentage?.toString(),
+        },
+        stakeProg: stakingData[selectedToken]?.stakeProg,
+      })
       const program = new Program(idl, stakingData[selectedToken]?.stakeProg, provider);
       const stakingTokenMint = new PublicKey(stakingData[selectedToken]?.mintAddr);
 
@@ -109,6 +120,11 @@ const AdminPageRight = React.forwardRef((props, ref) => {
         admin: stakingData[selectedToken].admin.publicKey,
         poolInfo: poolinfoPDA,
       };
+
+      console.log({
+        admin: stakingData[selectedToken].admin.publicKey?.toString(),
+        poolInfo: poolinfoPDA?.toString(),
+      })
 
       const tx = await program.methods
         .updatePoolDetail(index, newDetail)

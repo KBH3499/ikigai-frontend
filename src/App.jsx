@@ -7,7 +7,8 @@ import { useDarkMode } from "./provider/theme-provider";
 import AnimationsComponent from "./animations";
 import MaintanancePage from "./components/presentation/maintainance";
 import { useMediaQuery } from "react-responsive";
-
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Page = React.forwardRef((props, ref) => {
   return (
@@ -123,6 +124,7 @@ const App = () => {
       >
         <Social_Nav isMobile={isMobile} />
       </div>}
+      <ToastContainer />
     </div>
   );
 };
