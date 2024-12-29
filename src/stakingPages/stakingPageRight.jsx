@@ -360,8 +360,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             const expectedReward =
                 (stakeAmount * rewardPercentage * eligible_time) /
                 (100 * lockSeconds);
+            const finalExpReward = expectedReward - userInfoData?.rewardDebt?.toNumber()
             const claimedRewards = userInfoData.rewardDebt.toNumber() / 1e9;
-            setExpectedRewards(isNaN(expectedReward) ? 0 : expectedReward - userInfoData?.rewardDebt?.toNumber());
+            setExpectedRewards(isNaN(expectedReward) || finalExpReward <= 0 ? 0 : finalExpReward);
             setTotalStaked(userInfoData?.amount?.toNumber() / 1e9);
             props.setTotalReward(claimedRewards);
         } catch (error) {
