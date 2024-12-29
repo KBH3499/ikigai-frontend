@@ -1434,7 +1434,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         disabled={
                                             stakeAmount === 0 ||
                                             stakeAmount === "" ||
-                                            stakeAmount < 0 || balance === 0
+                                            stakeAmount < 0 || balance === 0 || userLimit < 0
                                         }
                                     >
                                         <span className="stake_main_font_style">
