@@ -38,16 +38,16 @@ const AdminPageRight = React.forwardRef((props, ref) => {
   const handleSelectedPool = (e) => {
     switch (e.target.value) {
       case '1 Month':
-        setSelectedPool(1)
+        setSelectedPool(0)
         break;
       case '3 Month':
-        setSelectedPool(2)
+        setSelectedPool(1)
         break;
       case '6 Month':
-        setSelectedPool(3)
+        setSelectedPool(2)
         break;
       case '12 Month':
-        setSelectedPool(4)
+        setSelectedPool(3)
         break;
 
       default:

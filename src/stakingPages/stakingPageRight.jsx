@@ -60,7 +60,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
     };
 
     const [stakeAmount, setStakeAmount] = useState("");
-    const [stakeDuration, setStakeDuration] = useState(1);
+    const [stakeDuration, setStakeDuration] = useState(0);
     const [startDate, setStartDate] = useState();
     const [startDateApproval, setStartDateApproval] = useState();
     const [redDateApproval, setRedDateApproval] = useState();
@@ -272,7 +272,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
             console.log({poolInfoPDA:poolInfoPDA?.toString()})
 
-            const keyValuePairs = poolInfoData?.keyValuePairs[stakeDuration - 1];
+            const keyValuePairs = poolInfoData?.keyValuePairs[stakeDuration];
             const stakeLimit =
                 (keyValuePairs.userLimit.toNumber() -
                     userInfoData?.amount?.toNumber()) /
@@ -665,9 +665,9 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         <br />
                                         <span style={{ fontSize: "12px" }}>
                                             {stakeDuration < 12
-                                                ? stakeDuration === 2
+                                                ? stakeDuration === 1
                                                     ? 3
-                                                    : stakeDuration === 3
+                                                    : stakeDuration === 2
                                                         ? 6
                                                         : 1
                                                 : 1}{" "}
@@ -798,7 +798,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             approvalUnknown();
                                             setIsStakeConfirmed(false);
                                             setStakeAmount("");
-                                            setStakeDuration(1);
+                                            setStakeDuration(0);
                                         }}
                                         disabled={isStaking}
                                     >
@@ -838,6 +838,49 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                 }}
                             >
                                 <div
+                                    className={`stake_pool_element ${stakeDuration === 0
+                                        ? "selected-pool"
+                                        : ""
+                                        }`}
+                                    style={{
+                                        position: "relative",
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={() => setStakeDuration(0)}
+                                >
+                                    <div>
+                                        <span style={{ fontSize: "" }}>
+                                            1 month
+                                        </span>
+                                    </div>
+                                    <div style={{ color: "#018790" }}>
+                                        <span>1</span>
+                                        <span>% APY</span>
+                                    </div>
+                                    <div style={{ fontSize: "10px" }}>
+                                        <span>6,000,000</span>
+                                        <span>pool</span>
+                                    </div>
+                                    <div
+                                        className={`stake_pool_ticket ${stakeDuration === 0
+                                            ? "stake_pool_ticket_show"
+                                            : ""
+                                            }`}
+                                        style={{
+                                            border: "1px solid #018790",
+                                            backgroundColor: "#FFCE2F",
+                                            position: "absolute",
+                                            bottom: "-25px",
+                                            width: "110px",
+                                            fontSize: "10px",
+                                            left: "-10px",
+                                        }}
+                                    >
+                                        <span>1</span>
+                                        <span> free lottery tickets</span>
+                                    </div>
+                                </div>
+                                <div
                                     className={`stake_pool_element ${stakeDuration === 1
                                         ? "selected-pool"
                                         : ""
@@ -850,11 +893,11 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                 >
                                     <div>
                                         <span style={{ fontSize: "" }}>
-                                            1 month
+                                            3 months
                                         </span>
                                     </div>
                                     <div style={{ color: "#018790" }}>
-                                        <span>1</span>
+                                        <span>3.5</span>
                                         <span>% APY</span>
                                     </div>
                                     <div style={{ fontSize: "10px" }}>
@@ -876,7 +919,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             left: "-10px",
                                         }}
                                     >
-                                        <span>1</span>
+                                        <span>3</span>
                                         <span> free lottery tickets</span>
                                     </div>
                                 </div>
@@ -893,11 +936,11 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                 >
                                     <div>
                                         <span style={{ fontSize: "" }}>
-                                            3 months
+                                            6 months
                                         </span>
                                     </div>
                                     <div style={{ color: "#018790" }}>
-                                        <span>3.5</span>
+                                        <span>7.5</span>
                                         <span>% APY</span>
                                     </div>
                                     <div style={{ fontSize: "10px" }}>
@@ -919,7 +962,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                             left: "-10px",
                                         }}
                                     >
-                                        <span>3</span>
+                                        <span>6</span>
                                         <span> free lottery tickets</span>
                                     </div>
                                 </div>
@@ -936,49 +979,6 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                 >
                                     <div>
                                         <span style={{ fontSize: "" }}>
-                                            6 months
-                                        </span>
-                                    </div>
-                                    <div style={{ color: "#018790" }}>
-                                        <span>7.5</span>
-                                        <span>% APY</span>
-                                    </div>
-                                    <div style={{ fontSize: "10px" }}>
-                                        <span>6,000,000</span>
-                                        <span>pool</span>
-                                    </div>
-                                    <div
-                                        className={`stake_pool_ticket ${stakeDuration === 3
-                                            ? "stake_pool_ticket_show"
-                                            : ""
-                                            }`}
-                                        style={{
-                                            border: "1px solid #018790",
-                                            backgroundColor: "#FFCE2F",
-                                            position: "absolute",
-                                            bottom: "-25px",
-                                            width: "110px",
-                                            fontSize: "10px",
-                                            left: "-10px",
-                                        }}
-                                    >
-                                        <span>6</span>
-                                        <span> free lottery tickets</span>
-                                    </div>
-                                </div>
-                                <div
-                                    className={`stake_pool_element ${stakeDuration === 4
-                                        ? "selected-pool"
-                                        : ""
-                                        }`}
-                                    style={{
-                                        position: "relative",
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={() => setStakeDuration(4)}
-                                >
-                                    <div>
-                                        <span style={{ fontSize: "" }}>
                                             12 months
                                         </span>
                                     </div>
@@ -991,7 +991,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         <span>pool</span>
                                     </div>
                                     <div
-                                        className={`stake_pool_ticket ${stakeDuration === 4
+                                        className={`stake_pool_ticket ${stakeDuration === 3
                                             ? "stake_pool_ticket_show"
                                             : ""
                                             }`}
@@ -1378,7 +1378,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         ></input>
                                     </div>
                                     <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
-                                        <div>Stake Limit : {userLimit}</div>
+                                        <div>Stake Limit : {userLimit > 0 ? userLimit : 0}</div>
                                         <div>Balance : {balance?.toLocaleString("en-US")}</div>
 
                                     </div>
