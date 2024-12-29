@@ -325,6 +325,18 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                         userInfoData?.rewardPercentage?.toString(),
                 },
             });
+
+            let eligible_time
+            let current_time = Date.now()
+            let elapsed_time = current_time - userInfoData?.depositTimestamp?.toNumber() ;
+            let lock_end_time = userInfoData?.depositTimestamp?.toNumber() + userInfoData?.lockPeriod?.toNumber();
+            
+            if (current_time > lock_end_time) {
+               eligible_time = userInfoData?.lockPeriod?.toNumber() // User has completed the full lock period
+            } else {
+               eligible_time = elapsed_time // User has completed the full lock period
+            };
+
             if (userInfoData?.amount?.toNumber() === 0) {
                 setIsUnstakeDisabled(true);
             } else {
@@ -341,14 +353,15 @@ const StakingPageRight = React.forwardRef((props, ref) => {
             );
             setIsLockDownEnded(hasTimePassed);
             setIsLockEndDate(lockEndDate);
+
             const stakeAmount = userInfoData.amount.toNumber() / 1e9;
             const rewardPercentage = userInfoData.rewardPercentage.toNumber();
             const lockSeconds = userInfoData.lockPeriod.toNumber();
             const expectedReward =
-                (stakeAmount * rewardPercentage * lockSeconds) /
+                (stakeAmount * rewardPercentage * eligible_time) /
                 (100 * lockSeconds);
             const claimedRewards = userInfoData.rewardDebt.toNumber() / 1e9;
-            setExpectedRewards(isNaN(expectedReward) ? 0 : expectedReward);
+            setExpectedRewards(isNaN(expectedReward) ? 0 : expectedReward - userInfoData?.rewardDebt?.toNumber());
             setTotalStaked(userInfoData?.amount?.toNumber() / 1e9);
             props.setTotalReward(claimedRewards);
         } catch (error) {
