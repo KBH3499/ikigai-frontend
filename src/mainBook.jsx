@@ -96,7 +96,7 @@ const MainBook = () => {
   const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState()
   const [isClaimed, setIsClaimed] = useState(false);
   const [totalReward, setTotalReward] = useState(0)
-  
+
   const handleAudio = () => {
     const audio = new Audio("/assets/page-flip-10.mp3"); // Adjust the path as necessary
     audio.play();
@@ -104,23 +104,23 @@ const MainBook = () => {
   const flipBook = useRef();
   const [isShrinkNav, setIsShrinkNav] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  
-  
+
+
   const prevButtonClick = () => {
     flipBook.current.pageFlip().flipPrev();
     setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
   };
-  
+
   const [isMobile, setIsMobile] = useState(false);
   const nextButtonClick = () => {
     const nextPageIndex = flipBook.current.pageFlip().getCurrentPageIndex() + 1;
-    if ((nextPageIndex === 61 || (isMobile && nextPageIndex === 62)) && !isAdminPanelEnabled) { 
+    if ((nextPageIndex === 61 || (isMobile && nextPageIndex === 62)) && !isAdminPanelEnabled) {
       return;
     }
     flipBook.current.pageFlip().flipNext();
     setCurrentPage(flipBook.current.pageFlip().getCurrentPageIndex());
   };
-  
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
@@ -148,7 +148,7 @@ const MainBook = () => {
       } else {
         setIsAdminPanelEnabled(false);
       }
-    }else{
+    } else {
       setIsAdminPanelEnabled(false);
     }
   }, [connected])
@@ -161,6 +161,92 @@ const MainBook = () => {
       setIsPlaying(false);
     }, 1800); // Hide after 1 seconds
   };
+
+  const [currentVisiblePage, setCurrentVisiblePage] = useState(0);
+
+  const pages = [
+    <HomeLeft />,
+    <Page1 />,
+    <AboutUsLeft />,
+    <Page2 />,
+    <ComicBlankLeft />,
+    <ComicPage1 />,
+    <ComicPage2 />,
+    <ComicPage3 />,
+    <ComicPage4 />,
+    <ComicPage5 />,
+    <ComicPage6 />,
+    <ComicPage7 />,
+    <ComicPage8 />,
+    <ComicPage9 />,
+    <ComicPage10 />,
+    <ComicPage11 />,
+    <ComicPage12 />,
+    <ComicPage13 />,
+    <ComicPage1_2 />,
+    <ComicPage2_2 />,
+    <ComicPage3_2 />,
+    <ComicPage4_2 />,
+    <ComicPage5_2 />,
+    <ComicPage6_2 />,
+    <ComicPage7_2 />,
+    <ComicPage8_2 />,
+    <ComicPage9_2 />,
+    <ComicPage10_2 />,
+    <ComicPage11_2 />,
+    <ComicPage12_2 />,
+    <ComicPage1_3 />,
+    <ComicPage2_3 />,
+    <ComicPage3_3 />,
+    <ComicPage4_3 />,
+    <ComicPage5_3 />,
+    <ComicPage6_3 />,
+    <ComicPage7_3 />,
+    <ComicPage8_3 />,
+    <ComicPage9_3 />,
+    <ComicPage10_3 />,
+    <ComicPage11_3 />,
+    <ComicPage12_3 />,
+    <Page3 />,
+    <Page4 />,
+    <RoadMapLeft />,
+    <RoadMapRight />,
+    <Animation1 />,
+    <GalleryPage1 />,
+    <Animation2 />,
+    <GalleryPage2 />,
+    <OurTeamLeft />,
+    <Page12 />,
+    <Page13 />,
+    <ContactUs />,
+    <Page15 pageNumber={currentPage} />,
+    <Page16 pageNumber={currentPage} />,
+    <LearningLeft />,
+    <LearningRight />,
+    <StakingPageLeft isClaimed={isClaimed} totalReward={totalReward} />,
+    <StakingPageRight setIsClaimed={setIsClaimed} setTotalReward={setTotalReward} />,
+    <MusicPageLeft />,
+    <MusicPageRight isMobile={isMobile} />,
+    <AdminPageLeft />,
+    <AmdinPageRight isMobile={isMobile} />,
+  ]
+
+  const handleFlip = (e) => {
+    setCurrentVisiblePage(e.data); // Update the current visible page
+  };
+
+  // Conditionally render pages near the current page
+  const renderPage = (index) => {
+    if (
+      index === currentVisiblePage ||
+      index === currentVisiblePage - 1 ||
+      index === currentVisiblePage + 1
+    ) {
+      return pages[index]; // Render the page if it's current, previous, or next
+    }
+    return <div className="demoPage comic_background_white_left loading-placeholder"><div className="spinner"></div></div>;
+  };
+
 
   return (
     <div
@@ -225,86 +311,21 @@ const MainBook = () => {
                 size={isMobile ? "fixed" : "stretch"}
                 minWidth={5}
                 maxWidth={1200}
-                // showCover={true}
                 usePortrait={true}
                 minHeight={5}
                 maxHeight={500}
                 swipeDistance={30}
                 onChangeOrientation={true}
-                // autoSize={true}
-                // drawShadow={false}
                 maxShadowOpacity={0.2}
-                // mobileScrollSupport={true}
                 ref={flipBook}
                 useMouseEvents={false}
                 showPageCorners={false}
-                onFlip={(e) => {}}
+                onFlip={handleFlip}
                 flippingTime={1500}
               >
-                <HomeLeft />
-                <Page1 />
-                <AboutUsLeft />
-                <Page2 />
-                <ComicBlankLeft />
-                <ComicPage1 />
-                <ComicPage2 />
-                <ComicPage3 />
-                <ComicPage4 />
-                <ComicPage5 />
-                <ComicPage6 />
-                <ComicPage7 />
-                <ComicPage8 />
-                <ComicPage9 />
-                <ComicPage10 />
-                <ComicPage11 />
-                <ComicPage12 />
-                <ComicPage13 />
-                <ComicPage1_2 />
-                <ComicPage2_2 />
-                <ComicPage3_2 />
-                <ComicPage4_2 />
-                <ComicPage5_2 />
-                <ComicPage6_2 />
-                <ComicPage7_2 />
-                <ComicPage8_2 />
-                <ComicPage9_2 />
-                <ComicPage10_2 />
-                <ComicPage11_2 />
-                <ComicPage12_2 />
-                <ComicPage1_3 />
-                <ComicPage2_3 />
-                <ComicPage3_3 />
-                <ComicPage4_3 />
-                <ComicPage5_3 />
-                <ComicPage6_3 />
-                <ComicPage7_3 />
-                <ComicPage8_3 />
-                <ComicPage9_3 />
-                <ComicPage10_3 />
-                <ComicPage11_3 />
-                <ComicPage12_3 />
-                <Page3 />
-                <Page4 />
-                <RoadMapLeft />
-                <RoadMapRight />
-                <Animation1 />
-                <GalleryPage1 />
-                <Animation2 />
-                <GalleryPage2 />
-                <OurTeamLeft />
-                <Page12 />
-                <Page13 />
-                <ContactUs />
-                <Page15 pageNumber={currentPage} />
-                <Page16 pageNumber={currentPage} />
-                <LearningLeft />
-                <LearningRight />
-                <StakingPageLeft isClaimed={isClaimed} totalReward={totalReward} />
-                <StakingPageRight setIsClaimed={setIsClaimed} setTotalReward={setTotalReward} />
-                <MusicPageLeft />
-                <MusicPageRight isMobile={isMobile} />
-                <AdminPageLeft />
-                <AmdinPageRight isMobile={isMobile} />
+                {pages.map((_, index) => (
+                  <div key={index}>{renderPage(index)}</div>
+                ))}
               </HTMLFlipBook>
             </div>
             {!isMobile && (
