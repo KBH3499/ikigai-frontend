@@ -83,19 +83,17 @@ const MusicPageLeft = React.lazy(() =>
 const MusicPageRight = React.lazy(() =>
   import("./pages/music-section/MusicPageRight")
 );
-const AdminPageLeft = React.lazy(() =>
-  import("./pages/admin/AdminPageLeft")
-);
-const AmdinPageRight = React.lazy(() =>
-  import("./pages/admin/AdminPageRight")
-);
+const AdminPageLeft = React.lazy(() => import("./pages/admin/AdminPageLeft"));
+const AmdinPageRight = React.lazy(() => import("./pages/admin/AdminPageRight"));
+
+const NftPageLeft = React.lazy(() => import("./pages/nftListing/nftPageLeft"));
 
 const MainBook = () => {
   const { isDarkModeEnabled } = useDarkMode();
   const { publicKey, connected } = useWallet();
-  const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState()
+  const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState();
   const [isClaimed, setIsClaimed] = useState(false);
-  const [totalReward, setTotalReward] = useState(0)
+  const [totalReward, setTotalReward] = useState(0);
 
   const handleAudio = () => {
     const audio = new Audio("/assets/page-flip-10.mp3"); // Adjust the path as necessary
@@ -105,7 +103,6 @@ const MainBook = () => {
   const [isShrinkNav, setIsShrinkNav] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
-
   const prevButtonClick = () => {
     flipBook.current.pageFlip().flipPrev();
     setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
@@ -114,7 +111,10 @@ const MainBook = () => {
   const [isMobile, setIsMobile] = useState(false);
   const nextButtonClick = () => {
     const nextPageIndex = flipBook.current.pageFlip().getCurrentPageIndex() + 1;
-    if ((nextPageIndex === 62 || (!isMobile && nextPageIndex === 61)) && !isAdminPanelEnabled) {
+    if (
+      (nextPageIndex === 62 || (!isMobile && nextPageIndex === 61)) &&
+      !isAdminPanelEnabled
+    ) {
       return;
     }
     flipBook.current.pageFlip().flipNext();
@@ -136,14 +136,19 @@ const MainBook = () => {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-    }
+    };
   }, []);
 
   useEffect(() => {
     if (connected) {
-      const temporaryAdmin = Keypair.fromSeed(publicKey.toBytes())
+      const temporaryAdmin = Keypair.fromSeed(publicKey.toBytes());
       const temporaryAdminPublicKey = temporaryAdmin?.publicKey?.toString();
-      if (temporaryAdminPublicKey === stakingData['ikigai']?.admin?.publicKey?.toString() || temporaryAdminPublicKey === stakingData['tyke']?.admin?.publicKey?.toString()) {
+      if (
+        temporaryAdminPublicKey ===
+          stakingData["ikigai"]?.admin?.publicKey?.toString() ||
+        temporaryAdminPublicKey ===
+          stakingData["tyke"]?.admin?.publicKey?.toString()
+      ) {
         setIsAdminPanelEnabled(true);
       } else {
         setIsAdminPanelEnabled(false);
@@ -151,7 +156,7 @@ const MainBook = () => {
     } else {
       setIsAdminPanelEnabled(false);
     }
-  }, [connected])
+  }, [connected]);
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -224,29 +229,36 @@ const MainBook = () => {
     <LearningLeft />,
     <LearningRight />,
     <StakingPageLeft isClaimed={isClaimed} totalReward={totalReward} />,
-    <StakingPageRight setIsClaimed={setIsClaimed} setTotalReward={setTotalReward} />,
+    <StakingPageRight
+      setIsClaimed={setIsClaimed}
+      setTotalReward={setTotalReward}
+    />,
     <MusicPageLeft />,
     <MusicPageRight isMobile={isMobile} />,
     <AdminPageLeft />,
     <AmdinPageRight isMobile={isMobile} />,
-  ]
+    <NftPageLeft />,
+    <NftPageLeft />,
+  ];
 
   const handleFlip = (e) => {
-    setCurrentVisiblePage(e.data); // Update the current visible page
+    setCurrentVisiblePage(e.data);
   };
 
-  // Conditionally render pages near the current page
   const renderPage = (index) => {
     if (
       index === currentVisiblePage ||
       index === currentVisiblePage - 1 ||
       index === currentVisiblePage + 1
     ) {
-      return pages[index]; // Render the page if it's current, previous, or next
+      return pages[index];
     }
-    return <div className="demoPage comic_background_white_left loading-placeholder"><div className="spinner"></div></div>;
+    return (
+      <div className="demoPage comic_background_white_left loading-placeholder">
+        <div className="spinner"></div>
+      </div>
+    );
   };
-
 
   return (
     <div
@@ -302,7 +314,12 @@ const MainBook = () => {
           </>
         )}
 
-        <div className={`book-cover ${!isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""}`} style={{ position: "relative" }}>
+        <div
+          className={`book-cover ${
+            !isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""
+          }`}
+          style={{ position: "relative" }}
+        >
           <div style={{ width: "100%", height: "80%", position: "relative" }}>
             <div className="demo-book">
               <HTMLFlipBook
@@ -330,9 +347,7 @@ const MainBook = () => {
             </div>
             {!isMobile && (
               <>
-                <div
-                  className="idle-right"
-                >
+                <div className="idle-right">
                   <div
                     className="display_flex_center"
                     style={{
@@ -348,34 +363,35 @@ const MainBook = () => {
                     />
                   </div>
                 </div>
-                {!isDarkModeEnabled &&
-                  <><div
-                    style={{
-                      width: "92px",
-                      position: "absolute",
-                      left: "0",
-                      top: "-75px",
-                      pointerEvents: "none",
-                    }}
-                  >
+                {!isDarkModeEnabled && (
+                  <>
                     <div
-                      className="display_flex_center"
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        boxSizing: "border-box",
+                        width: "92px",
+                        position: "absolute",
+                        left: "0",
+                        top: "-75px",
+                        pointerEvents: "none",
                       }}
                     >
-                      <img
-                        alt=""
-                        src="/assets/Character_Left_Shock_FinalGIF.gif"
+                      <div
+                        className="display_flex_center"
                         style={{
                           width: "100%",
-                          display: isPlaying ? "block" : "none",
+                          height: "100%",
+                          boxSizing: "border-box",
                         }}
-                      />
+                      >
+                        <img
+                          alt=""
+                          src="/assets/Character_Left_Shock_FinalGIF.gif"
+                          style={{
+                            width: "100%",
+                            display: isPlaying ? "block" : "none",
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
                     <div
                       style={{
                         width: "92px",
@@ -404,13 +420,11 @@ const MainBook = () => {
                       </div>
                     </div>
                   </>
-                }
+                )}
               </>
             )}
             {isDarkModeEnabled && !isMobile && (
-              <div
-                className="idle-left"
-              >
+              <div className="idle-left">
                 <div
                   className="display_flex_center"
                   style={{
