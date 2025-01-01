@@ -148,6 +148,14 @@
 }
 /* Responsive styles */
 @media (max-width: 860px) {
+  .music_page_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    /* height: 100vh; */
+  }
   .playlist {
     width: 90%; /* Adjust the width */
     padding: 15px;
@@ -155,7 +163,7 @@
   }
 
   .playlist-title {
-    font-size: 0.5em;
+    font-size: 0.5rem;
   }
 
   .playlist-item {
@@ -237,7 +245,7 @@
   }
 
   .playlist-title {
-    font-size: 0.2em;
+    font-size: 1.5rem;
   }
 
   .playlist-item {
