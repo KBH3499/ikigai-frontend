@@ -10,7 +10,10 @@ export default {
         tertiary: '#7979AC',
         border: "#373851",
         white: "#ECFDFF",
-        black: "#000000"
+        black: "#000000",
+        gray: "#433636",
+        blue: "#018790",
+        orange: "#FF2F2F",
 
       },
       gradientColorStops: {

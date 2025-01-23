@@ -1,6 +1,9 @@
 .stake_main_font_style {
   font-family: ChelseaMarket-Regular;
 }
+.sumrai_font_style {
+  font-family: "SamuraiBlast";
+}
 .stake_flex_align_center {
   display: flex;
   align-items: center;
@@ -14,6 +17,13 @@
   height: 40%;
   border: 2px solid black;
 }
+.stake_border_1 {
+  border: 2px solid black;
+}
+.stake_border_top {
+  border-top: 1px solid black;
+}
+
 
 @media (max-width: 1400px){
   .stake_border{
@@ -197,6 +207,27 @@
   border: 2px solid black;
   width: calc(100% - 20px);
 }
+.border_blue{
+  border: 2px solid #018790;
+}
+.border_blue_3{
+  border: 3px solid #018790;
+  box-shadow: -1px 3px 0px 0px #018790;
+
+}
+.tile_border{
+  border: 1px solid #C9C8C8;
+}
+.tile_active_border{
+  border: 1px solid #FFCE2F;
+}
+.inner_shadow{
+  box-shadow: 0px 0px 2.9px 0px #0000006B inset;
+}
+.inner_active_shadow{
+  box-shadow: 0px 1px 11.8px 0px #FFD54E inset;
+box-shadow: 0px 2px 4px 0px #FFAD33;
+}
 .stake-aws-btn {
   --button-default-height: 30px !important;
   --button-default-font-size: 14px !important;
@@ -271,10 +302,43 @@
   --button-raise-level: 2px !important;
   --button-hover-pressure: 3 !important;
   --transform-speed: 0.15s !important;
-  --button-primary-color: #00b8c4 !important;
+  --button-primary-color: #fff !important;
   --button-primary-color-dark: #000000 !important;
   --button-primary-color-light: #080808 !important;
-  --button-primary-color-hover: #17b7ba !important;
+  --button-primary-color-hover: #fff !important;
+  --button-primary-color-active: #84a9a9 !important;
+  --button-primary-border: 2px solid #000000 !important;
+  --button-secondary-color: #ffffff !important;
+  --button-secondary-color-dark: #2a2b2c !important;
+  --button-secondary-color-light: #000000 !important;
+  --button-secondary-color-hover: #93a2ae !important;
+  --button-secondary-color-active: #cfdee9 !important;
+  --button-secondary-border: 2px solid #000000 !important;
+  --button-anchor-color: #0e4f88 !important;
+  --button-anchor-color-dark: #072743 !important;
+  --button-anchor-color-light: #ffffff !important;
+  --button-anchor-color-hover: #0d4a7f !important;
+  --button-anchor-color-active: #0c4271 !important;
+  --button-anchor-border: none !important;
+  --button-danger-color: #c42e2e !important;
+  --button-danger-color-dark: #861f1f !important;
+  --button-danger-color-light: #ffffff !important;
+  --button-danger-color-hover: #bc2c2c !important;
+  --button-danger-color-active: #af2929 !important;
+  --button-danger-border: none !important;
+}
+.stake-aws-btn4 {
+  --button-default-height: 40px !important;
+  --button-default-font-size: 14px !important;
+  --button-default-border-radius: 25px !important;
+  --button-horizontal-padding: 30px !important;
+  --button-raise-level: 2px !important;
+  --button-hover-pressure: 3 !important;
+  --transform-speed: 0.15s !important;
+  --button-primary-color: #FFC056 !important;
+  --button-primary-color-dark: #000000 !important;
+  --button-primary-color-light: #080808 !important;
+  --button-primary-color-hover: #FFC056 !important;
   --button-primary-color-active: #84a9a9 !important;
   --button-primary-border: 2px solid #000000 !important;
   --button-secondary-color: #ffffff !important;

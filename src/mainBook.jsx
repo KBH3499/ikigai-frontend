@@ -10,6 +10,11 @@ import { useDarkMode } from "./provider/theme-provider";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Keypair } from "@solana/web3.js";
 import { stakingData } from "./utils/constants";
+import NftPage from "./pages/nft/NftPage";
+import Lottery from "./pages/lottery/Lottery";
+import ConnectWallet from "./pages/connect-wallet/ConnectWallet";
+import BuyTicket from "./pages/buy-tickets/BuyTicket";
+import HistoryTicket from "./pages/history-ticket/HistoryTicket";
 
 const Page1 = React.lazy(() => import("./pages/page1"));
 const Page2 = React.lazy(() => import("./pages/page2"));
@@ -165,6 +170,11 @@ const MainBook = () => {
   const [currentVisiblePage, setCurrentVisiblePage] = useState(0);
 
   const pages = [
+    <HistoryTicket/>,
+    <ConnectWallet/>,
+    <BuyTicket/>,
+    <NftPage/>,
+    <Lottery/>,
     <HomeLeft />,
     <Page1 />,
     <AboutUsLeft />,
