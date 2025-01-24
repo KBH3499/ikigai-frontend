@@ -61,6 +61,31 @@ const ComicPage9_3 = React.lazy(() => import("./pages/comicPage9_3"));
 const ComicPage10_3 = React.lazy(() => import("./pages/comicPage10_3"));
 const ComicPage11_3 = React.lazy(() => import("./pages/comicPage11_3"));
 const ComicPage12_3 = React.lazy(() => import("./pages/comicPage12_3"));
+const ComicPage14 = React.lazy(() => import("./pages/comicPage14"));
+const ComicPage14_2 = React.lazy(() => import("./pages/comicPage14_2"));
+const ComicPage14_3 = React.lazy(() => import("./pages/comicPage14_3"));
+const ComicPage14_4 = React.lazy(() => import("./pages/comicPage14_4"));
+const ComicPage14_5 = React.lazy(() => import("./pages/comicPage14_5"));
+const ComicPage14_6 = React.lazy(() => import("./pages/comicPage14_6"));
+const ComicPage14_7 = React.lazy(() => import("./pages/comicPage14_7"));
+const ComicPage14_8 = React.lazy(() => import("./pages/comicPage14_8"));
+const ComicPage14_9 = React.lazy(() => import("./pages/comicPage14_9"));
+const ComicPage14_10 = React.lazy(() => import("./pages/comicPage14_10"));
+const ComicPage14_11 = React.lazy(() => import("./pages/comicPage14_11"));
+const ComicPage14_12 = React.lazy(() => import("./pages/comicPage14_12"));
+const ComicPage14_13 = React.lazy(() => import("./pages/comicPage14_13"));
+const ComicPage15 = React.lazy(() => import("./pages/comicPage15"));
+const ComicPage15_2 = React.lazy(() => import("./pages/comicPage15_2"));
+const ComicPage15_3 = React.lazy(() => import("./pages/comicPage15_3"));
+const ComicPage15_4 = React.lazy(() => import("./pages/comicPage15_4"));
+const ComicPage15_5 = React.lazy(() => import("./pages/comicPage15_5"));
+const ComicPage15_6 = React.lazy(() => import("./pages/comicPage15_6"));
+const ComicPage15_7 = React.lazy(() => import("./pages/comicPage15_7"));
+const ComicPage15_8 = React.lazy(() => import("./pages/comicPage15_8"));
+const ComicPage15_9 = React.lazy(() => import("./pages/comicPage15_9"));
+const ComicPage15_10 = React.lazy(() => import("./pages/comicPage15_10"));
+const ComicPage15_11 = React.lazy(() => import("./pages/comicPage15_11"));
+const ComicPage15_12 = React.lazy(() => import("./pages/comicPage15_12"));
 
 const OurTeamLeft = React.lazy(() => import("./pages/our_team_left"));
 const HomeLeft = React.lazy(() => import("./pages/home_left"));
@@ -88,19 +113,15 @@ const MusicPageLeft = React.lazy(() =>
 const MusicPageRight = React.lazy(() =>
   import("./pages/music-section/MusicPageRight")
 );
-const AdminPageLeft = React.lazy(() =>
-  import("./pages/admin/AdminPageLeft")
-);
-const AmdinPageRight = React.lazy(() =>
-  import("./pages/admin/AdminPageRight")
-);
+const AdminPageLeft = React.lazy(() => import("./pages/admin/AdminPageLeft"));
+const AmdinPageRight = React.lazy(() => import("./pages/admin/AdminPageRight"));
 
 const MainBook = () => {
   const { isDarkModeEnabled } = useDarkMode();
   const { publicKey, connected } = useWallet();
-  const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState()
+  const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState();
   const [isClaimed, setIsClaimed] = useState(false);
-  const [totalReward, setTotalReward] = useState(0)
+  const [totalReward, setTotalReward] = useState(0);
 
   const handleAudio = () => {
     const audio = new Audio("/assets/page-flip-10.mp3"); // Adjust the path as necessary
@@ -110,7 +131,6 @@ const MainBook = () => {
   const [isShrinkNav, setIsShrinkNav] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
-
   const prevButtonClick = () => {
     flipBook.current.pageFlip().flipPrev();
     setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
@@ -119,7 +139,10 @@ const MainBook = () => {
   const [isMobile, setIsMobile] = useState(false);
   const nextButtonClick = () => {
     const nextPageIndex = flipBook.current.pageFlip().getCurrentPageIndex() + 1;
-    if ((nextPageIndex === 62 || (!isMobile && nextPageIndex === 61)) && !isAdminPanelEnabled) {
+    if (
+      (nextPageIndex === 92 || (!isMobile && nextPageIndex === 91)) &&
+      !isAdminPanelEnabled
+    ) {
       return;
     }
     flipBook.current.pageFlip().flipNext();
@@ -141,14 +164,19 @@ const MainBook = () => {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-    }
+    };
   }, []);
 
   useEffect(() => {
     if (connected) {
-      const temporaryAdmin = Keypair.fromSeed(publicKey.toBytes())
+      const temporaryAdmin = Keypair.fromSeed(publicKey.toBytes());
       const temporaryAdminPublicKey = temporaryAdmin?.publicKey?.toString();
-      if (temporaryAdminPublicKey === stakingData['ikigai']?.admin?.publicKey?.toString() || temporaryAdminPublicKey === stakingData['tyke']?.admin?.publicKey?.toString()) {
+      if (
+        temporaryAdminPublicKey ===
+          stakingData["ikigai"]?.admin?.publicKey?.toString() ||
+        temporaryAdminPublicKey ===
+          stakingData["tyke"]?.admin?.publicKey?.toString()
+      ) {
         setIsAdminPanelEnabled(true);
       } else {
         setIsAdminPanelEnabled(false);
@@ -156,7 +184,7 @@ const MainBook = () => {
     } else {
       setIsAdminPanelEnabled(false);
     }
-  }, [connected])
+  }, [connected]);
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -170,11 +198,6 @@ const MainBook = () => {
   const [currentVisiblePage, setCurrentVisiblePage] = useState(0);
 
   const pages = [
-    // <HistoryTicket/>,
-    // <ConnectWallet/>,
-    // <BuyTicket/>,
-    <NftPage/>,
-    // <Lottery/>,
     <HomeLeft />,
     <Page1 />,
     <AboutUsLeft />,
@@ -217,6 +240,31 @@ const MainBook = () => {
     <ComicPage10_3 />,
     <ComicPage11_3 />,
     <ComicPage12_3 />,
+    <ComicPage14/>,
+    <ComicPage14_2/>,
+    <ComicPage14_3/>,
+    <ComicPage14_4/>,
+    <ComicPage14_5/>,
+    <ComicPage14_6/>,
+    <ComicPage14_7/>,
+    <ComicPage14_8/>,
+    <ComicPage14_9/>,
+    <ComicPage14_10/>,
+    <ComicPage14_11/>,
+    <ComicPage14_12/>,
+    <ComicPage14_13/>,
+    <ComicPage15/>,
+    <ComicPage15_2/>,
+    <ComicPage15_3/>,
+    <ComicPage15_4/>,
+    <ComicPage15_5/>,
+    <ComicPage15_6/>,
+    <ComicPage15_7/>,
+    <ComicPage15_8/>,
+    <ComicPage15_9/>,
+    <ComicPage15_10/>,
+    <ComicPage15_11/>,
+    <ComicPage15_12/>,
     <Page3 />,
     <Page4 />,
     <RoadMapLeft />,
@@ -225,21 +273,28 @@ const MainBook = () => {
     <GalleryPage1 />,
     <Animation2 />,
     <GalleryPage2 />,
-    <OurTeamLeft />,
     <Page12 />,
     <Page13 />,
     <ContactUs />,
-    <Page15 pageNumber={currentPage} />,
-    <Page16 pageNumber={currentPage} />,
     <LearningLeft />,
     <LearningRight />,
+    <Page15 pageNumber={currentPage} />,
+    <Page16 pageNumber={currentPage} />,
     <StakingPageLeft isClaimed={isClaimed} totalReward={totalReward} />,
-    <StakingPageRight setIsClaimed={setIsClaimed} setTotalReward={setTotalReward} />,
+    <StakingPageRight
+      setIsClaimed={setIsClaimed}
+      setTotalReward={setTotalReward}
+    />,
     <MusicPageLeft />,
     <MusicPageRight isMobile={isMobile} />,
+    <NftPage />,
+    <HistoryTicket />,
+    <ConnectWallet />,
+    <BuyTicket />,
+    <Lottery />,
     <AdminPageLeft />,
     <AmdinPageRight isMobile={isMobile} />,
-  ]
+  ];
 
   const handleFlip = (e) => {
     setCurrentVisiblePage(e.data); // Update the current visible page
@@ -254,9 +309,12 @@ const MainBook = () => {
     ) {
       return pages[index]; // Render the page if it's current, previous, or next
     }
-    return <div className="demoPage comic_background_white_left loading-placeholder"><div className="spinner"></div></div>;
+    return (
+      <div className="demoPage comic_background_white_left loading-placeholder">
+        <div className="spinner"></div>
+      </div>
+    );
   };
-
 
   return (
     <div
@@ -312,7 +370,12 @@ const MainBook = () => {
           </>
         )}
 
-        <div className={`book-cover ${!isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""}`} style={{ position: "relative" }}>
+        <div
+          className={`book-cover ${
+            !isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""
+          }`}
+          style={{ position: "relative" }}
+        >
           <div style={{ width: "100%", height: "80%", position: "relative" }}>
             <div className="demo-book">
               <HTMLFlipBook
@@ -340,9 +403,7 @@ const MainBook = () => {
             </div>
             {!isMobile && (
               <>
-                <div
-                  className="idle-right"
-                >
+                <div className="idle-right">
                   <div
                     className="display_flex_center"
                     style={{
@@ -358,34 +419,35 @@ const MainBook = () => {
                     />
                   </div>
                 </div>
-                {!isDarkModeEnabled &&
-                  <><div
-                    style={{
-                      width: "92px",
-                      position: "absolute",
-                      left: "0",
-                      top: "-75px",
-                      pointerEvents: "none",
-                    }}
-                  >
+                {!isDarkModeEnabled && (
+                  <>
                     <div
-                      className="display_flex_center"
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        boxSizing: "border-box",
+                        width: "92px",
+                        position: "absolute",
+                        left: "0",
+                        top: "-75px",
+                        pointerEvents: "none",
                       }}
                     >
-                      <img
-                        alt=""
-                        src="/assets/Character_Left_Shock_FinalGIF.gif"
+                      <div
+                        className="display_flex_center"
                         style={{
                           width: "100%",
-                          display: isPlaying ? "block" : "none",
+                          height: "100%",
+                          boxSizing: "border-box",
                         }}
-                      />
+                      >
+                        <img
+                          alt=""
+                          src="/assets/Character_Left_Shock_FinalGIF.gif"
+                          style={{
+                            width: "100%",
+                            display: isPlaying ? "block" : "none",
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
                     <div
                       style={{
                         width: "92px",
@@ -414,13 +476,11 @@ const MainBook = () => {
                       </div>
                     </div>
                   </>
-                }
+                )}
               </>
             )}
             {isDarkModeEnabled && !isMobile && (
-              <div
-                className="idle-left"
-              >
+              <div className="idle-left">
                 <div
                   className="display_flex_center"
                   style={{

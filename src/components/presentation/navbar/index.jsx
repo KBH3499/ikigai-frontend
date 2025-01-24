@@ -49,7 +49,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
               position: "relative",
               display: "flex",
               alignItems: "center",
-            }: {
+            } : {
               position: "relative",
               display: "flex",
               alignItems: "center",
@@ -182,14 +182,54 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                             paddingLeft: "2px",
                           }}
                           onPress={() => {
+                            flipBook.current.pageFlip().flip(55, "top");
+                            if (isShrinkNav) {
+                              toggleMenu();
+                            }
+                          }}
+                        >
+                          <p>Chapter5</p>
+                          <p className="color-change">new</p>
+                        </AwesomeButton>
+                      </div>
+                      <div>
+                        <AwesomeButton
+                          className="nav_button_padding"
+                          type="secondary"
+                          style={{
+                            fontFamily: "KaoriGelBold",
+                            paddingTop: "10px",
+                            paddingRight: "2px",
+                            paddingLeft: "2px",
+                          }}
+                          onPress={() => {
+                            flipBook.current.pageFlip().flip(43, "top");
+                            if (isShrinkNav) {
+                              toggleMenu();
+                            }
+                          }}
+                        >
+                          <p>Chapter 4</p>
+                        </AwesomeButton>
+                      </div>
+                      <div>
+                        <AwesomeButton
+                          className="nav_button_padding"
+                          type="secondary"
+                          style={{
+                            fontFamily: "KaoriGelBold",
+                            paddingTop: "10px",
+                            paddingRight: "2px",
+                            paddingLeft: "2px",
+                          }}
+                          onPress={() => {
                             flipBook.current.pageFlip().flip(30, "top");
                             if (isShrinkNav) {
                               toggleMenu();
                             }
                           }}
                         >
-                          <p>Chapter3</p>
-                          <p className="color-change">new</p>
+                          <p>Chapter 3</p>
                         </AwesomeButton>
                       </div>
                       <div>
@@ -209,7 +249,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                             }
                           }}
                         >
-                          Chapter2
+                          Chapter 2
                         </AwesomeButton>
                       </div>
                       <div>
@@ -230,7 +270,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                             }
                           }}
                         >
-                          Chapter1
+                          Chapter 1
                         </AwesomeButton>
                       </div>
 
@@ -238,7 +278,47 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     </div>
                   </div>
                 </div>
-
+                <div
+                  className="comic_dropdown"
+                  style={{ position: "relative" }}
+                >
+                  <AwesomeButton
+                    className="nav_button_padding"
+                    type={buttonType}
+                    onPress={() => {
+                      flipBook.current.pageFlip().flip(4, "top");
+                    }}
+                  >
+                    <span style={{ color: "yellow" }}>
+                      CEX
+                    </span>
+                  </AwesomeButton>
+                  <div className="dropdown">
+                    <div className="dropdown-content">
+                      <div>
+                        <AwesomeButton
+                          className="nav_button_padding"
+                          type="secondary"
+                          style={{
+                            fontFamily: "KaoriGelBold",
+                            paddingTop: "10px",
+                            paddingRight: "2px",
+                            paddingLeft: "2px",
+                          }}
+                        >
+                          <a
+                            href="https://ascendex.com/en/cashtrade-spottrading/usdt/ikigai"
+                            target="_blank"
+                          >
+                            <span style={{ color: "yellow" }}>
+                            AscendEx
+                            </span>
+                          </a>
+                        </AwesomeButton>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <AwesomeButton
                   className="nav_button_padding"
                   type={buttonType}
@@ -248,7 +328,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(42, "top");
+                    flipBook.current.pageFlip().flip(66, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }
@@ -267,7 +347,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(44, "top");
+                    flipBook.current.pageFlip().flip(68, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }
@@ -286,7 +366,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(46, "top");
+                    flipBook.current.pageFlip().flip(70, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }
@@ -305,7 +385,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(56, "top");
+                    flipBook.current.pageFlip().flip(78, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }
@@ -341,7 +421,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(52, "top");
+                    flipBook.current.pageFlip().flip(79, "top");
                     nextButtonClick();
                     // setCurrentPage(40);
                     // setCurrentPage(39);
@@ -383,7 +463,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(58, "top");
+                    flipBook.current.pageFlip().flip(82, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }
@@ -402,7 +482,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(62, "top");
+                    flipBook.current.pageFlip().flip(91, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }
@@ -422,7 +502,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(60, "top");
+                    flipBook.current.pageFlip().flip(84, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }
