@@ -170,11 +170,11 @@ const MainBook = () => {
   const [currentVisiblePage, setCurrentVisiblePage] = useState(0);
 
   const pages = [
-    <HistoryTicket/>,
-    <ConnectWallet/>,
-    <BuyTicket/>,
+    // <HistoryTicket/>,
+    // <ConnectWallet/>,
+    // <BuyTicket/>,
     <NftPage/>,
-    <Lottery/>,
+    // <Lottery/>,
     <HomeLeft />,
     <Page1 />,
     <AboutUsLeft />,
