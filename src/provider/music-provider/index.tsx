@@ -4,7 +4,7 @@ import musicList from "../../json/music-list.json";
 const MusicPlayerContext = createContext();
 
 export const MusicPlayerProvider = ({ children }) => {
-  const basePath = "public/music-assets";
+  const basePath = "music-assets";
   const [songIndex, setSongIndex] = useState(0);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef(new Audio()); // Create a new Audio instance
