@@ -21,6 +21,15 @@ body {
     background-size: cover; /* Ensure it covers without zooming */
     background-attachment: fixed; /* Make sure the background doesn't zoom or move */
   }
+
+  .scrollable-div {
+    /* width: 300px; */
+    height: 290px !important;
+    overflow-y: scroll;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+    /* border: 1px solid #ccc; */
+  }
+  
 }
 
 /* Keyframes for smooth transitions */
@@ -1977,3 +1986,12 @@ input[type="number"] {
 .loading-placeholder span {
   margin-top: 10px; /* Add space between spinner and text */
 }
+
+.scrollable-div {
+  /* width: 300px; */
+  height: 330px;
+  overflow-y: scroll;
+  overflow-x: hidden; /* Prevents horizontal scrolling */
+  /* border: 1px solid #ccc; */
+}
+

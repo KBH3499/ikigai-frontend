@@ -7,6 +7,7 @@ import { useWalletConnect } from "../provider/staking-provider";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletReadyState } from "@solana/wallet-adapter-base";
 import { useMediaQuery } from "react-responsive";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const StakingPageLeft = React.forwardRef((props, ref) => {
   const isMobile = useMediaQuery({ query: "(max-width: 1400px)" });
@@ -39,9 +40,8 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
 
   const handleConnect = async () => {
     try {
-
       const phantomWallet = wallets.find(
-        (wallet) => wallet.adapter.name === "Phantom",
+        (wallet) => wallet.adapter.name === "Phantom"
       );
       if (!phantomWallet) {
         alert("Phantom wallet not available. Please install Phantom.");
@@ -53,7 +53,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
         phantomWallet.readyState !== WalletReadyState.Loadable
       ) {
         alert(
-          "Phantom wallet is not ready. Please ensure it is installed and active.",
+          "Phantom wallet is not ready. Please ensure it is installed and active."
         );
         return;
       }
@@ -61,9 +61,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
       select(phantomWallet.adapter.name);
 
       await connect();
-
     } catch (error) {
-
       console.error("Wallet connection failed:", error.message);
     }
   };
@@ -112,7 +110,13 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
           paddingRight: "5%",
         }}
       >
-        <div style={{ height: isMobileSmall ? "20%" :"30%", width: "100%", display: "flex" }}>
+        <div
+          style={{
+            height: isMobileSmall ? "20%" : "30%",
+            width: "100%",
+            display: "flex",
+          }}
+        >
           <div
             className="stake_main_font_style stake_flex_align_center"
             style={{ textAlign: "start", margin: "0", flex: "80%" }}
@@ -121,10 +125,9 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
               <h1 className="font">STAKING</h1>
               <span className="stake_main_title_content">
                 {" "}
-                Our content is designed to educate the 500,000+
-                crypto earning investors who use the CoinLedger
-                platform. Though our and form are for
-                informational purposes.
+                Our content is designed to educate the 500,000+ crypto earning
+                investors who use the CoinLedger platform. Though our and form
+                are for informational purposes.
               </span>
             </div>
           </div>
@@ -143,17 +146,14 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
             />
           </div>
         </div>
-        <div
-          className="stake_border">
+        <div className="stake_border">
           <div
             className="stake_element1"
-            style={!isMobile ? { overflowY: "auto" } : { }}
-            >
+            style={!isMobile ? { overflowY: "auto" } : {}}
+          >
             <div className=" stake_main_font_style stake_wrap stake_flex_align_center">
               <div className="stake_flex_align_center">
-                <span className="ikigai-font">
-                  STAKEikigai
-                </span>
+                <span className="ikigai-font">STAKEikigai</span>
                 <div className="ikigai-stake-img">
                   <img
                     alt=""
@@ -161,64 +161,64 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     style={{ height: "100%" }}
                   />
                 </div>
-                {isMobile && <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
-                  <AwesomeButton
-                    className="stake-aws-btn"
-                    type="primary"
-                  >
-                    <div style={{ padding: 3, marginTop: 3 }}>
-                      <svg
-                        width="13"
-                        height="13"
-                        viewBox="0 0 8 8"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M3.08571 0C2.0127 0 1.14286 0.869847 1.14286 1.94286C1.14286 3.01587 2.0127 3.88571 3.08571 3.88571C4.15872 3.88571 5.02857 3.01587 5.02857 1.94286C5.02857 0.869847 4.15872 0 3.08571 0Z"
-                          fill="#070808"
-                        />
-                        <path
-                          d="M4.23226 4.75007C3.4727 4.62885 2.69873 4.62885 1.93917 4.75007L1.85775 4.76306C0.787507 4.93387 0 5.85702 0 6.94081C0 7.52579 0.474213 8 1.05919 8H5.11224C5.69722 8 6.17143 7.52579 6.17143 6.94081C6.17143 5.85702 5.38392 4.93387 4.31368 4.76306L4.23226 4.75007Z"
-                          fill="#070808"
-                        />
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M6.74286 2.74286C6.93221 2.74286 7.08571 2.89636 7.08571 3.08571V3.65714H7.65714C7.8465 3.65714 8 3.81065 8 4C8 4.18935 7.8465 4.34286 7.65714 4.34286H7.08571V4.91429C7.08571 5.10364 6.93221 5.25714 6.74286 5.25714C6.5535 5.25714 6.4 5.10364 6.4 4.91429V4.34286H5.82857C5.63922 4.34286 5.48571 4.18935 5.48571 4C5.48571 3.81065 5.63922 3.65714 5.82857 3.65714H6.4V3.08571C6.4 2.89636 6.5535 2.74286 6.74286 2.74286Z"
-                          fill="#070808"
-                        />
-                      </svg>
-                    </div>
-                  </AwesomeButton>
-                  <AwesomeButton
-                    className="stake-aws-btn"
-                    type="primary"
-                    style={{
-                      fontSize: "8px",
-                      fontFamily: "KaoriGelBold",
-                      padding: 0,
-                    }}
-                  >
-                    <div style={{ marginTop: 10 }}>
-                      <svg
-                        width="18"
-                        height="13"
-                        viewBox="0 0 8 8"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M4.36139 0.0472828C4.43427 0.091855 4.49207 0.150731 4.55225 0.210201C4.57404 0.23131 4.57404 0.23131 4.59627 0.252845C4.64474 0.299881 4.69294 0.347167 4.74115 0.394457C4.77591 0.428297 4.81068 0.462123 4.84547 0.495933C4.93002 0.578163 5.01437 0.660583 5.09865 0.743074C5.16716 0.810122 5.23574 0.877101 5.30437 0.94403C5.31415 0.953567 5.32393 0.963104 5.33401 0.97293C5.35388 0.992306 5.37374 1.01168 5.39361 1.03106C5.57976 1.2126 5.76569 1.39435 5.95154 1.57618C6.11094 1.73213 6.27053 1.88788 6.43026 2.0435C6.61588 2.22434 6.80137 2.4053 6.98668 2.58644C7.00645 2.60576 7.02621 2.62508 7.04598 2.6444C7.05571 2.65391 7.06543 2.66341 7.07545 2.67321C7.14392 2.74012 7.21247 2.80694 7.28106 2.87374C7.36466 2.95515 7.44812 3.03669 7.53141 3.1184C7.5739 3.16006 7.61646 3.20165 7.65914 3.24313C7.70542 3.28812 7.75148 3.33333 7.79748 3.3786C7.81098 3.39162 7.82448 3.40464 7.8384 3.41806C7.92913 3.50801 7.98327 3.58162 8 3.70994C7.97313 3.92355 7.78666 4.05354 7.62857 4.18548C7.58388 4.22449 7.54196 4.26565 7.49983 4.30728C7.43564 4.37072 7.36982 4.43014 7.30044 4.48804C7.25575 4.52705 7.21383 4.56821 7.1717 4.60985C7.10751 4.67328 7.04169 4.73271 6.97231 4.79061C6.92762 4.82961 6.8857 4.87078 6.84357 4.91241C6.77938 4.97584 6.71356 5.03527 6.64418 5.09317C6.59949 5.13218 6.55757 5.17334 6.51544 5.21497C6.45125 5.27841 6.38543 5.33783 6.31605 5.39573C6.27136 5.43474 6.22944 5.4759 6.18731 5.51754C6.12312 5.58097 6.0573 5.6404 5.98792 5.6983C5.94323 5.7373 5.90131 5.77847 5.85918 5.8201C5.79499 5.88353 5.72917 5.94296 5.65979 6.00086C5.6151 6.03987 5.57318 6.08103 5.53105 6.12266C5.46686 6.1861 5.40104 6.24552 5.33166 6.30342C5.28697 6.34243 5.24505 6.38359 5.20292 6.42523C5.13873 6.48866 5.07291 6.54809 5.00353 6.60599C4.95884 6.64499 4.91692 6.68616 4.87479 6.72779C4.81059 6.79123 4.74484 6.85072 4.67533 6.90848C4.63068 6.94761 4.5895 6.98937 4.54779 7.03147C4.34345 7.23067 4.34345 7.23067 4.1889 7.23725C4.09361 7.2314 4.03815 7.21309 3.96331 7.15494C3.88664 7.05111 3.88018 6.97053 3.88212 6.84466C3.88211 6.82642 3.88209 6.80817 3.88208 6.78937C3.88213 6.72937 3.8827 6.66939 3.88327 6.60939C3.88341 6.56767 3.88351 6.52595 3.88359 6.48423C3.88386 6.37465 3.88458 6.26508 3.88539 6.15551C3.88613 6.0436 3.88647 5.93169 3.88683 5.81979C3.88761 5.60038 3.88886 5.38098 3.89039 5.16158C3.82453 5.17232 3.75869 5.18324 3.69286 5.19419C3.67449 5.19718 3.65611 5.20018 3.63718 5.20326C2.96437 5.31573 2.37258 5.62769 1.86692 6.06927C1.85667 6.07818 1.84642 6.08709 1.83586 6.09627C1.71705 6.2 1.60447 6.30553 1.50233 6.42523C1.48619 6.44309 1.47 6.4609 1.45377 6.47869C1.3109 6.63632 1.18476 6.80215 1.06483 6.97696C1.05144 6.99639 1.05144 6.99639 1.03778 7.01621C0.86684 7.26641 0.71964 7.53086 0.588412 7.80294C0.539807 7.90317 0.496533 7.9526 0.390336 7.99144C0.27448 8.01334 0.190649 7.99328 0.093039 7.9306C0.0305842 7.87357 0.00442861 7.82073 0.000440726 7.73787C8.47579e-05 7.70752 4.32989e-05 7.67716 0.000253803 7.64681C0.000177523 7.63031 0.000100965 7.6138 2.23742e-05 7.5968C-9.30269e-05 7.54258 0.00025471 7.48837 0.000681056 7.43414C0.000759814 7.4155 0.000838016 7.39686 0.000919161 7.37765C0.00828664 5.88462 0.257484 4.24643 1.33827 3.11483C1.35077 3.10166 1.36327 3.08849 1.37615 3.07492C1.49283 2.95636 1.62254 2.85653 1.75755 2.75887C1.76773 2.75142 1.77791 2.74396 1.78841 2.73628C2.34384 2.33494 3.12038 2.09822 3.81162 2.10013C3.83375 2.10018 3.83375 2.10018 3.85634 2.10023C3.86758 2.10027 3.87881 2.10031 3.89039 2.10035C3.89021 2.06525 3.89021 2.06525 3.89003 2.02945C3.88892 1.80895 3.8881 1.58845 3.88756 1.36795C3.88727 1.25459 3.88689 1.14123 3.88627 1.02787C3.88567 0.918467 3.88535 0.809071 3.8852 0.699671C3.8851 0.657932 3.88491 0.616194 3.88461 0.574456C3.88421 0.515996 3.88416 0.457545 3.88419 0.399084C3.88399 0.381827 3.88379 0.36457 3.88359 0.346791C3.88403 0.253293 3.89108 0.187673 3.94508 0.106993C4.07301 -0.0113291 4.20586 -0.0319378 4.36139 0.0472828Z"
-                          fill="black"
-                        />
-                      </svg>
-                    </div>
-                  </AwesomeButton>
-                </div>}
+                {isMobile && (
+                  <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
+                    <AwesomeButton className="stake-aws-btn" type="primary">
+                      <div style={{ padding: 3, marginTop: 3 }}>
+                        <svg
+                          width="13"
+                          height="13"
+                          viewBox="0 0 8 8"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3.08571 0C2.0127 0 1.14286 0.869847 1.14286 1.94286C1.14286 3.01587 2.0127 3.88571 3.08571 3.88571C4.15872 3.88571 5.02857 3.01587 5.02857 1.94286C5.02857 0.869847 4.15872 0 3.08571 0Z"
+                            fill="#070808"
+                          />
+                          <path
+                            d="M4.23226 4.75007C3.4727 4.62885 2.69873 4.62885 1.93917 4.75007L1.85775 4.76306C0.787507 4.93387 0 5.85702 0 6.94081C0 7.52579 0.474213 8 1.05919 8H5.11224C5.69722 8 6.17143 7.52579 6.17143 6.94081C6.17143 5.85702 5.38392 4.93387 4.31368 4.76306L4.23226 4.75007Z"
+                            fill="#070808"
+                          />
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M6.74286 2.74286C6.93221 2.74286 7.08571 2.89636 7.08571 3.08571V3.65714H7.65714C7.8465 3.65714 8 3.81065 8 4C8 4.18935 7.8465 4.34286 7.65714 4.34286H7.08571V4.91429C7.08571 5.10364 6.93221 5.25714 6.74286 5.25714C6.5535 5.25714 6.4 5.10364 6.4 4.91429V4.34286H5.82857C5.63922 4.34286 5.48571 4.18935 5.48571 4C5.48571 3.81065 5.63922 3.65714 5.82857 3.65714H6.4V3.08571C6.4 2.89636 6.5535 2.74286 6.74286 2.74286Z"
+                            fill="#070808"
+                          />
+                        </svg>
+                      </div>
+                    </AwesomeButton>
+                    <AwesomeButton
+                      className="stake-aws-btn"
+                      type="primary"
+                      style={{
+                        fontSize: "8px",
+                        fontFamily: "KaoriGelBold",
+                        padding: 0,
+                      }}
+                    >
+                      <div style={{ marginTop: 10 }}>
+                        <svg
+                          width="18"
+                          height="13"
+                          viewBox="0 0 8 8"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4.36139 0.0472828C4.43427 0.091855 4.49207 0.150731 4.55225 0.210201C4.57404 0.23131 4.57404 0.23131 4.59627 0.252845C4.64474 0.299881 4.69294 0.347167 4.74115 0.394457C4.77591 0.428297 4.81068 0.462123 4.84547 0.495933C4.93002 0.578163 5.01437 0.660583 5.09865 0.743074C5.16716 0.810122 5.23574 0.877101 5.30437 0.94403C5.31415 0.953567 5.32393 0.963104 5.33401 0.97293C5.35388 0.992306 5.37374 1.01168 5.39361 1.03106C5.57976 1.2126 5.76569 1.39435 5.95154 1.57618C6.11094 1.73213 6.27053 1.88788 6.43026 2.0435C6.61588 2.22434 6.80137 2.4053 6.98668 2.58644C7.00645 2.60576 7.02621 2.62508 7.04598 2.6444C7.05571 2.65391 7.06543 2.66341 7.07545 2.67321C7.14392 2.74012 7.21247 2.80694 7.28106 2.87374C7.36466 2.95515 7.44812 3.03669 7.53141 3.1184C7.5739 3.16006 7.61646 3.20165 7.65914 3.24313C7.70542 3.28812 7.75148 3.33333 7.79748 3.3786C7.81098 3.39162 7.82448 3.40464 7.8384 3.41806C7.92913 3.50801 7.98327 3.58162 8 3.70994C7.97313 3.92355 7.78666 4.05354 7.62857 4.18548C7.58388 4.22449 7.54196 4.26565 7.49983 4.30728C7.43564 4.37072 7.36982 4.43014 7.30044 4.48804C7.25575 4.52705 7.21383 4.56821 7.1717 4.60985C7.10751 4.67328 7.04169 4.73271 6.97231 4.79061C6.92762 4.82961 6.8857 4.87078 6.84357 4.91241C6.77938 4.97584 6.71356 5.03527 6.64418 5.09317C6.59949 5.13218 6.55757 5.17334 6.51544 5.21497C6.45125 5.27841 6.38543 5.33783 6.31605 5.39573C6.27136 5.43474 6.22944 5.4759 6.18731 5.51754C6.12312 5.58097 6.0573 5.6404 5.98792 5.6983C5.94323 5.7373 5.90131 5.77847 5.85918 5.8201C5.79499 5.88353 5.72917 5.94296 5.65979 6.00086C5.6151 6.03987 5.57318 6.08103 5.53105 6.12266C5.46686 6.1861 5.40104 6.24552 5.33166 6.30342C5.28697 6.34243 5.24505 6.38359 5.20292 6.42523C5.13873 6.48866 5.07291 6.54809 5.00353 6.60599C4.95884 6.64499 4.91692 6.68616 4.87479 6.72779C4.81059 6.79123 4.74484 6.85072 4.67533 6.90848C4.63068 6.94761 4.5895 6.98937 4.54779 7.03147C4.34345 7.23067 4.34345 7.23067 4.1889 7.23725C4.09361 7.2314 4.03815 7.21309 3.96331 7.15494C3.88664 7.05111 3.88018 6.97053 3.88212 6.84466C3.88211 6.82642 3.88209 6.80817 3.88208 6.78937C3.88213 6.72937 3.8827 6.66939 3.88327 6.60939C3.88341 6.56767 3.88351 6.52595 3.88359 6.48423C3.88386 6.37465 3.88458 6.26508 3.88539 6.15551C3.88613 6.0436 3.88647 5.93169 3.88683 5.81979C3.88761 5.60038 3.88886 5.38098 3.89039 5.16158C3.82453 5.17232 3.75869 5.18324 3.69286 5.19419C3.67449 5.19718 3.65611 5.20018 3.63718 5.20326C2.96437 5.31573 2.37258 5.62769 1.86692 6.06927C1.85667 6.07818 1.84642 6.08709 1.83586 6.09627C1.71705 6.2 1.60447 6.30553 1.50233 6.42523C1.48619 6.44309 1.47 6.4609 1.45377 6.47869C1.3109 6.63632 1.18476 6.80215 1.06483 6.97696C1.05144 6.99639 1.05144 6.99639 1.03778 7.01621C0.86684 7.26641 0.71964 7.53086 0.588412 7.80294C0.539807 7.90317 0.496533 7.9526 0.390336 7.99144C0.27448 8.01334 0.190649 7.99328 0.093039 7.9306C0.0305842 7.87357 0.00442861 7.82073 0.000440726 7.73787C8.47579e-05 7.70752 4.32989e-05 7.67716 0.000253803 7.64681C0.000177523 7.63031 0.000100965 7.6138 2.23742e-05 7.5968C-9.30269e-05 7.54258 0.00025471 7.48837 0.000681056 7.43414C0.000759814 7.4155 0.000838016 7.39686 0.000919161 7.37765C0.00828664 5.88462 0.257484 4.24643 1.33827 3.11483C1.35077 3.10166 1.36327 3.08849 1.37615 3.07492C1.49283 2.95636 1.62254 2.85653 1.75755 2.75887C1.76773 2.75142 1.77791 2.74396 1.78841 2.73628C2.34384 2.33494 3.12038 2.09822 3.81162 2.10013C3.83375 2.10018 3.83375 2.10018 3.85634 2.10023C3.86758 2.10027 3.87881 2.10031 3.89039 2.10035C3.89021 2.06525 3.89021 2.06525 3.89003 2.02945C3.88892 1.80895 3.8881 1.58845 3.88756 1.36795C3.88727 1.25459 3.88689 1.14123 3.88627 1.02787C3.88567 0.918467 3.88535 0.809071 3.8852 0.699671C3.8851 0.657932 3.88491 0.616194 3.88461 0.574456C3.88421 0.515996 3.88416 0.457545 3.88419 0.399084C3.88399 0.381827 3.88379 0.36457 3.88359 0.346791C3.88403 0.253293 3.89108 0.187673 3.94508 0.106993C4.07301 -0.0113291 4.20586 -0.0319378 4.36139 0.0472828Z"
+                            fill="black"
+                          />
+                        </svg>
+                      </div>
+                    </AwesomeButton>
+                  </div>
+                )}
               </div>
             </div>
-              {!isMobile && <div className="stake_flex_align_center">
+            {!isMobile && (
+              <div className="stake_flex_align_center">
                 <div>
                   <AwesomeButton
                     className="stake-aws-btn"
@@ -278,41 +278,46 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                         fill="black"
                       />
                     </svg>
-                    <span className="stake_main_font_style">
-                      SHARE
-                    </span>
+                    <span className="stake_main_font_style">SHARE</span>
                   </AwesomeButton>
                 </div>
-              </div>}
-            {!isMobile && <div
-              style={{
-                justifyContent: "start",
-                display: "flex",
-              }}
-            >
-              {connected && <div>
-                <span
-                  className="stake_main_font_style"
-                  style={{
-                    textAlign: "start",
-                    fontSize: isMobile ? "12px": "20px",
-                  }}
-                >
-                  Total Claimed Rewards
-                </span>
-              </div>}
-            </div>}
-            {connected && <div className="stake_flex_align_center stake_wrap">
-              {!isMobile && <div style={{ display: "flex" }}>
-                <div>
-                  <span
-                    className="stake_main_font_style"
-                    style={{ fontSize: isMobile ? "25px" : "30px" }}
-                  >
-                    {props.totalReward}
-                  </span>
-                </div>
-                {/* <div>
+              </div>
+            )}
+            {!isMobile && (
+              <div
+                style={{
+                  justifyContent: "start",
+                  display: "flex",
+                }}
+              >
+                {connected && (
+                  <div>
+                    <span
+                      className="stake_main_font_style"
+                      style={{
+                        textAlign: "start",
+                        fontSize: isMobile ? "12px" : "20px",
+                      }}
+                    >
+                      Total Claimed Rewards
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+            {connected && (
+              <div className="stake_flex_align_center stake_wrap">
+                {!isMobile && (
+                  <div style={{ display: "flex" }}>
+                    <div>
+                      <span
+                        className="stake_main_font_style"
+                        style={{ fontSize: isMobile ? "25px" : "30px" }}
+                      >
+                        {props.totalReward}
+                      </span>
+                    </div>
+                    {/* <div>
                   <span
                     className="stake_main_font_style"
                     style={{
@@ -323,27 +328,34 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                     20.33$
                   </span>
                 </div> */}
-              </div>
-              }
-              {isMobile && connected &&
-                <div style={{ display: "flex", justifyContent: "center", alignContent: "center", gap:2 }}>
-                  <span
-                    className="stake_main_font_style"
+                  </div>
+                )}
+                {isMobile && connected && (
+                  <div
                     style={{
-                      textAlign: "start",
-                      fontSize: "15px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignContent: "center",
+                      gap: 2,
                     }}
                   >
-                    Total Claimed Rewards: {" "}
-                  </span>
-                  <span
-                    className="stake_main_font_style"
-                    style={{ fontSize: "17px" }}
-                  >
-                    {props.totalReward}
+                    <span
+                      className="stake_main_font_style"
+                      style={{
+                        textAlign: "start",
+                        fontSize: "15px",
+                      }}
+                    >
+                      Total Claimed Rewards:{" "}
+                    </span>
+                    <span
+                      className="stake_main_font_style"
+                      style={{ fontSize: "17px" }}
+                    >
+                      {props.totalReward}
                     </span>
 
-{/*
+                    {/*
                   <span
                     className="stake_main_font_style"
                     style={{
@@ -353,9 +365,9 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   >
                     20.33$
                   </span> */}
-                </div>
-              }
-              {/* {isWalletConnected && <div style={{ display: "flex" }}>
+                  </div>
+                )}
+                {/* {isWalletConnected && <div style={{ display: "flex" }}>
                 <div style={{ paddingLeft: "10px" }}>
                   <AwesomeButton
                     className="stake-aws-btn"
@@ -411,12 +423,19 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   </AwesomeButton>
                 </div>
               </div>} */}
-            </div>}
+              </div>
+            )}
             <div
               className="stake_flex_align_center"
-              style={{ justifyContent: "center", padding: isMobile ? "0px" :"20px", marginTop: isMobile ? 20 :0 }}
+              style={{
+                justifyContent: "center",
+                padding: isMobile ? "0px" : "20px",
+                marginTop: isMobile ? 20 : 0,
+              }}
             >
-              <div style={{ paddingLeft: "10px", width: "100%" }}>
+              <WalletMultiButton />
+
+              {/* <div style={{ paddingLeft: "10px", width: "100%" }}>
                 <AwesomeButton
                   className="stake-aws-btn2 "
                   type="primary"
@@ -442,11 +461,11 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       : "CONNECT WALLET TO START STAKING"}
                   </span>
                 </AwesomeButton>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
-        {isWalletConnected && (
+        {connected && (
           <>
             <div
               style={{
@@ -465,9 +484,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
             <div className="stake-container">
               <div className="stake-box">
                 <div className="stake-header">
-                  <span className="staking-font">
-                    STAKING RATIO
-                  </span>
+                  <span className="staking-font">STAKING RATIO</span>
                   <div className="inner-box">
                     <span>24HRS</span>
                   </div>
@@ -479,9 +496,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                   <div
                     className="horizontal-line"
                     ref={lineRef}
-                    onMouseMove={(e) =>
-                      e.buttons === 1 && handleDrag(e)
-                    }
+                    onMouseMove={(e) => e.buttons === 1 && handleDrag(e)}
                     onClick={handleDrag}
                   >
                     <div
@@ -498,16 +513,12 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
 
               <div className="stake-box">
                 <div className="stake-header">
-                  <span className="staking-font">
-                    STAKING REWARD
-                  </span>
+                  <span className="staking-font">STAKING REWARD</span>
                   <div className="inner-box">
                     <span>24HRS</span>
                   </div>
                 </div>
-                <div className="stacking-percentage">
-                  70.40%
-                </div>
+                <div className="stacking-percentage">70.40%</div>
                 <div className="stacking-font-light">
                   CURRENT REWARD BALANCE
                 </div>
@@ -515,16 +526,12 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
 
               <div className="stake-box">
                 <div className="stake-header">
-                  <span className="staking-font">
-                    DAILY CASHOUT
-                  </span>
+                  <span className="staking-font">DAILY CASHOUT</span>
                   <div className="inner-box">
                     <span>24HRS</span>
                   </div>
                 </div>
-                <div className="stacking-percentage">
-                  70.40%
-                </div>
+                <div className="stacking-percentage">70.40%</div>
                 <div className="stacking-font-light">
                   CURRENT REWARD BALANCE
                 </div>
@@ -533,7 +540,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
           </>
         )}
 
-        {!isWalletConnected && (
+        {!connected && (
           <>
             <div
               className="stake_main_font_style"
@@ -595,9 +602,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       console.log("invite friends");
                     }}
                   >
-                    <span className="stake_main_font_style">
-                      BET
-                    </span>
+                    <span className="stake_main_font_style">BET</span>
                   </AwesomeButton>
                 </div>
               </div>
@@ -607,7 +612,7 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
 
         {/* Wallet Connect Component */}
 
-        {isWalletConnectVisible && (
+        {/* {isWalletConnectVisible && (
           <div className="stake_stake">
             <div className="stake_unstake1_bg">
               <div className="stake_unstake1_comp">
@@ -671,15 +676,15 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                       width: "100%",
                       marginBottom: "20px",
                     }}
-                  >
-                    <div
+                  > */}
+        {/* <div
                       className="stake_phantom_wallet_select"
                       style={{
                         margin: "20px",
                         padding: "5px",
                       }}
-                    >
-                      <div
+                    > */}
+        {/* <div
                         style={{
                           display: "flex",
                           alignItems: "center",
@@ -687,16 +692,15 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                             "space-between",
                           height: "100%",
                         }}
-                      >
-                        <div
+                      > */}
+        {/* <div
                           style={{
                             height: "100%",
                             display: "flex",
                             alignItems: "center",
                             gap: "10px",
-                          }}
-                        >
-                          <div
+                          }} */}
+        {/* <div
                             style={{ height: "100%" }}
                           >
                             <img
@@ -707,9 +711,8 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                               }}
                             />
                           </div>
-                          <span>Phantom Wallet</span>
-                          {/* <WalletMultiButton /> */}
-                        </div>
+                          <span>Phantom Wallet</span> */}
+        {/* </div>
                         <div>
                           <input
                             type="checkbox"
@@ -717,11 +720,11 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                             name="vehicle1"
                             value="Bike"
                           />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
+                        </div>*/}
+        {/* </div> 
+                    </div> */}
+        {/* </div> */}
+        {/* <div
                     style={{
                       paddingRight: "10px",
                       width: "80%",
@@ -745,12 +748,12 @@ const StakingPageLeft = React.forwardRef((props, ref) => {
                           : "APPROVE"}
                       </span>
                     </AwesomeButton>
-                  </div>
-                </div>
+                  </div> */}
+        {/* </div>
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

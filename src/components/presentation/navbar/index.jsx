@@ -454,7 +454,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                   </a>
                 </AwesomeButton>
 
-                <AwesomeButton
+                {/* <AwesomeButton
                   className="nav_button_padding"
                   type={buttonType}
                   style={{
@@ -472,7 +472,66 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                   <span style={{ color: "yellow" }}>
                     Staking
                   </span>
-                </AwesomeButton>
+                </AwesomeButton> */}
+                                <div
+                  className="comic_dropdown"
+                  style={{ position: "relative" }}
+                >
+                  <AwesomeButton
+                    className="nav_button_padding"
+                    type={buttonType}
+                  >
+                    <span style={{ color: "yellow" }}>
+                      Dapp Tools
+                    </span>
+                  </AwesomeButton>
+                  <div className="dropdown">
+                    <div className="dropdown-content">
+                      <div>
+                        <AwesomeButton
+                          className="nav_button_padding"
+                          type="secondary"
+                          style={{
+                            fontFamily: "KaoriGelBold",
+                            paddingTop: "10px",
+                            paddingRight: "2px",
+                            paddingLeft: "2px",
+                          }}
+                          onPress={() => {
+                            flipBook.current.pageFlip().flip(82, "top");
+                            if (isShrinkNav) {
+                              toggleMenu();
+                            }
+                          }}
+                        >
+                            Staking
+                          
+                        </AwesomeButton>
+                      </div>
+                      <div>
+                        <AwesomeButton
+                          className="nav_button_padding"
+                          type="secondary"
+                          style={{
+                            fontFamily: "KaoriGelBold",
+                            paddingTop: "10px",
+                            paddingRight: "2px",
+                            paddingLeft: "2px",
+                          }}
+                          onPress={() => {
+                            flipBook.current.pageFlip().flip(86, "top");
+                            if (isShrinkNav) {
+                              toggleMenu();
+                            }
+                          }}
+                        >
+                            Mint Nft
+                          
+                        </AwesomeButton>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 {isAdminPanelEnabled && <AwesomeButton
                   className="nav_button_padding"
                   type={buttonType}

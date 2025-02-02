@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { lazy, useEffect, useMemo, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import "react-awesome-button/dist/styles.css";
 import "react-awesome-button/dist/themes/theme-blue.css";
@@ -8,13 +8,24 @@ import Footer from "./components/presentation/footer";
 // Hooks
 import { useDarkMode } from "./provider/theme-provider";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Keypair } from "@solana/web3.js";
+import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { stakingData } from "./utils/constants";
 import NftPage from "./pages/nft/NftPage";
 import Lottery from "./pages/lottery/Lottery";
 import ConnectWallet from "./pages/connect-wallet/ConnectWallet";
 import BuyTicket from "./pages/buy-tickets/BuyTicket";
 import HistoryTicket from "./pages/history-ticket/HistoryTicket";
+import { createTransferCheckedInstruction, getAssociatedTokenAddress } from "@solana/spl-token";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { create, fetchAsset, fetchCollection } from "@metaplex-foundation/mpl-core";
+import { generateSigner } from "@metaplex-foundation/umi";
+import bs58 from "bs58"; // ✅ Import bs58 for Base58 encoding
+import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+
+import { toast } from "react-toastify";
+import "@solana/wallet-adapter-react-ui/styles.css";
+
 
 const Page1 = React.lazy(() => import("./pages/page1"));
 const Page2 = React.lazy(() => import("./pages/page2"));
@@ -100,7 +111,8 @@ const RoadMapLeft = React.lazy(() => import("./pages/roadMapLeft"));
 const RoadMapRight = React.lazy(() => import("./pages/roadMapRight"));
 const AboutUsLeft = React.lazy(() => import("./pages/aboutUsLeft"));
 const ContactUs = React.lazy(() => import("./pages/contactUs"));
-
+const NftPageLeft = React.lazy(() => import("./pages/nft/NftPageLeft"));
+const NftPageRight = React.lazy(() => import("./pages/nft/NftPageRight"));
 const StakingPageLeft = React.lazy(() =>
   import("./stakingPages/stakingPageLeft")
 );
@@ -117,26 +129,45 @@ const AdminPageLeft = React.lazy(() => import("./pages/admin/AdminPageLeft"));
 const AmdinPageRight = React.lazy(() => import("./pages/admin/AdminPageRight"));
 
 const MainBook = () => {
+  const network = WalletAdapterNetwork.Devnet;
+  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const { isDarkModeEnabled } = useDarkMode();
-  const { publicKey, connected } = useWallet();
+  const wallet = useWallet();
+  const umi = createUmi(endpoint);
+
+  const connection = new Connection(endpoint);
+
+  const { publicKey, signTransaction, connected } = wallet;
   const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState();
   const [isClaimed, setIsClaimed] = useState(false);
   const [totalReward, setTotalReward] = useState(0);
 
-  const handleAudio = () => {
-    const audio = new Audio("/assets/page-flip-10.mp3"); // Adjust the path as necessary
-    audio.play();
-  };
   const flipBook = useRef();
   const [isShrinkNav, setIsShrinkNav] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentVisiblePage, setCurrentVisiblePage] = useState(0);
+  const [minting, setMinting] = useState(false);
+  const [mintingAsset, setMintingAsset] = useState("");
+
+  const handleClick = () => {
+    setIsPlaying(true);
+    setTimeout(() => {
+      setIsPlaying(false);
+    }, 1800); // Hide after 1 seconds
+  };
+
+  const handleAudio = () => {
+    const audio = new Audio("/assets/page-flip-10.mp3");
+    audio.play();
+  };
 
   const prevButtonClick = () => {
     flipBook.current.pageFlip().flipPrev();
     setCurrentPage(flipBook.current.pageFlip().pages.currentPageIndex);
   };
 
-  const [isMobile, setIsMobile] = useState(false);
   const nextButtonClick = () => {
     const nextPageIndex = flipBook.current.pageFlip().getCurrentPageIndex() + 1;
     if (
@@ -147,6 +178,138 @@ const MainBook = () => {
     }
     flipBook.current.pageFlip().flipNext();
     setCurrentPage(flipBook.current.pageFlip().getCurrentPageIndex());
+  };
+
+  const createAsset = async (assetId, amount) => {
+    setMinting(true)
+    setMintingAsset(assetId)
+    let assets = [];
+    if (!publicKey || !connected) {
+      console.error("Wallet not connected");
+      return;
+    }
+
+    const BASE_URL = `https://nft.ikigaionsol.com/media/${assetId}.json`;
+    umi.use(walletAdapterIdentity(wallet));
+
+    // Token and admin addresses (use actual addresses here)
+    const tokenAddress = new PublicKey(
+      "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE"
+    );
+    const adminAddress = new PublicKey(
+      "DG6ZWtgMqYo4P9wsjF5vetosPZmthk33AxJCgeBEY7nr"
+    );
+
+    const userTokenAccount = await getAssociatedTokenAddress(
+      tokenAddress,
+      publicKey
+    );
+    const adminTokenAccount = await getAssociatedTokenAddress(
+      tokenAddress,
+      adminAddress
+    );
+    
+    
+    try {
+
+      let collection;
+      console.log({umi})
+      const collectionAddress = new PublicKey(
+        "3SsoHng2czRKa1Prdsihgm95DdKpo9Wi2F6yB8ANN8zi"
+      );
+
+      collection = await fetchCollection(umi, collectionAddress);
+      console.log(`Fetched Collection Address: ${collection.publicKey}`);
+      if (!wallet || !wallet.publicKey || !collection ) {
+        console.error(
+          "Phantom wallet is not connected or publicKey is missing."
+        );
+        return;
+      }
+
+      // Fetch the latest blockhash for transaction finalization
+      const { blockhash } = await connection.getLatestBlockhash();
+
+      // Create the transfer instruction
+      const transferInstruction = createTransferCheckedInstruction(
+        userTokenAccount, // Sender's token account
+        tokenAddress, // Token address (mint address)
+        adminTokenAccount, // Receiver's token account
+        wallet.publicKey, // Sender's public key (signer)
+        amount * 10 ** 9, // Amount (5 tokens with 9 decimals)
+        9 // Token decimals
+      );
+
+      // Create a new transaction
+      const transferTx = new Transaction().add(transferInstruction);
+
+      // Set blockhash and fee payer
+      transferTx.recentBlockhash = blockhash;
+      transferTx.feePayer = wallet.publicKey;
+
+      // Sign transaction with wallet
+      const signedTx = await signTransaction(transferTx);
+
+      // Send transaction
+      const transferSignature = await connection.sendRawTransaction(
+        signedTx.serialize()
+      );
+
+      // Confirm transaction
+      await connection.confirmTransaction(transferSignature, "finalized");
+
+
+      console.log(`Token transfer successful: ${transferSignature}`);
+
+      if (transferSignature) {
+
+        const assetAddress = generateSigner(umi);
+        console.log(`Creating asset: ${assetAddress.publicKey}`);
+
+        const transaction = create(umi, {
+          asset: assetAddress,
+          collection: collection.publicKey,
+          owner: umi.identity.publicKey,
+          authority: umi.identity.publicKey,
+          name: `IKIGAI NFT`,
+          uri: BASE_URL,
+        });
+
+        // ✅ Ensure `txSignature` is Base58 encoded
+        const txSignatureUint8Array = (await transaction.sendAndConfirm(umi))
+          .signature;
+        const txSignature = bs58.encode(txSignatureUint8Array); // Convert Uint8Array to Base58
+
+        console.log(`Asset creation confirmed with signature: ${txSignature}`);
+
+        // ✅ Ensure finalization before fetching asset
+        await connection.confirmTransaction(txSignature, "finalized");
+        console.log("Transaction finalized on-chain.");
+        setMinting(false)
+        setMintingAsset("")
+  
+        // ✅ Retry fetching the asset with a delay
+        let asset;
+        for (let attempt = 0; attempt < 5; attempt++) {
+          try {
+            asset = await fetchAsset(umi, assetAddress.publicKey);
+            console.log(`Fetched Asset Details: ${asset.publicKey}`);
+            assets.push(asset);
+            return assetAddress.publicKey;
+          } catch (error) {
+            console.warn(`Retrying asset fetch (Attempt ${attempt + 1}/5)...`);
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+          }
+        }
+
+        console.error("Failed to fetch asset after multiple attempts.");
+      }
+    } catch (error) {
+      toast.error(error)
+      setMinting(false)
+      setMintingAsset("")
+      console.error("Error in token transfer:", error);
+    }
   };
 
   useEffect(() => {
@@ -185,17 +348,6 @@ const MainBook = () => {
       setIsAdminPanelEnabled(false);
     }
   }, [connected]);
-
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const handleClick = () => {
-    setIsPlaying(true);
-    setTimeout(() => {
-      setIsPlaying(false);
-    }, 1800); // Hide after 1 seconds
-  };
-
-  const [currentVisiblePage, setCurrentVisiblePage] = useState(0);
 
   const pages = [
     <HomeLeft />,
@@ -240,31 +392,31 @@ const MainBook = () => {
     <ComicPage10_3 />,
     <ComicPage11_3 />,
     <ComicPage12_3 />,
-    <ComicPage14/>,
-    <ComicPage14_2/>,
-    <ComicPage14_3/>,
-    <ComicPage14_4/>,
-    <ComicPage14_5/>,
-    <ComicPage14_6/>,
-    <ComicPage14_7/>,
-    <ComicPage14_8/>,
-    <ComicPage14_9/>,
-    <ComicPage14_10/>,
-    <ComicPage14_11/>,
-    <ComicPage14_12/>,
-    <ComicPage14_13/>,
-    <ComicPage15/>,
-    <ComicPage15_2/>,
-    <ComicPage15_3/>,
-    <ComicPage15_4/>,
-    <ComicPage15_5/>,
-    <ComicPage15_6/>,
-    <ComicPage15_7/>,
-    <ComicPage15_8/>,
-    <ComicPage15_9/>,
-    <ComicPage15_10/>,
-    <ComicPage15_11/>,
-    <ComicPage15_12/>,
+    <ComicPage14 />,
+    <ComicPage14_2 />,
+    <ComicPage14_3 />,
+    <ComicPage14_4 />,
+    <ComicPage14_5 />,
+    <ComicPage14_6 />,
+    <ComicPage14_7 />,
+    <ComicPage14_8 />,
+    <ComicPage14_9 />,
+    <ComicPage14_10 />,
+    <ComicPage14_11 />,
+    <ComicPage14_12 />,
+    <ComicPage14_13 />,
+    <ComicPage15 />,
+    <ComicPage15_2 />,
+    <ComicPage15_3 />,
+    <ComicPage15_4 />,
+    <ComicPage15_5 />,
+    <ComicPage15_6 />,
+    <ComicPage15_7 />,
+    <ComicPage15_8 />,
+    <ComicPage15_9 />,
+    <ComicPage15_10 />,
+    <ComicPage15_11 />,
+    <ComicPage15_12 />,
     <Page3 />,
     <Page4 />,
     <RoadMapLeft />,
@@ -287,13 +439,14 @@ const MainBook = () => {
     />,
     <MusicPageLeft />,
     <MusicPageRight isMobile={isMobile} />,
-    <NftPage />,
-    <HistoryTicket />,
-    <ConnectWallet />,
-    <BuyTicket />,
-    <Lottery />,
-    <AdminPageLeft />,
-    <AmdinPageRight isMobile={isMobile} />,
+    <NftPageLeft createAsset={createAsset} minting={minting} mintingAsset={mintingAsset} connected={connected}/>,
+    <NftPageRight createAsset={createAsset} minting={minting} mintingAsset={mintingAsset} connected={connected}/>,
+    // <HistoryTicket />,
+    // <ConnectWallet />,
+    // <BuyTicket />,
+    // <Lottery />,
+    // <AdminPageLeft />,
+    // <AmdinPageRight isMobile={isMobile} />,
   ];
 
   const handleFlip = (e) => {

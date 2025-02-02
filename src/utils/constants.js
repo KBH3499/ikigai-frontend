@@ -244,3 +244,5 @@ export const stakingData = {
         admin: adminKeyPairTyke
     }
 }
+
+export const MAX_ASSET_COUNT = 1000;
