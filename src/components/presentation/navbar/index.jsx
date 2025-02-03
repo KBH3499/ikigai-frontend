@@ -541,7 +541,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     paddingLeft: "2px",
                   }}
                   onPress={() => {
-                    flipBook.current.pageFlip().flip(91, "top");
+                    flipBook.current.pageFlip().flip(88, "top");
                     if (isShrinkNav) {
                       toggleMenu();
                     }

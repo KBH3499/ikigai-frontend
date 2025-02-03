@@ -30,6 +30,7 @@ const Context = ({ children }) => {
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
+      new SolflareWalletAdapter()
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [network]

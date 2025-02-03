@@ -171,7 +171,7 @@ const MainBook = () => {
   const nextButtonClick = () => {
     const nextPageIndex = flipBook.current.pageFlip().getCurrentPageIndex() + 1;
     if (
-      (nextPageIndex === 92 || (!isMobile && nextPageIndex === 91)) &&
+      (nextPageIndex === 88 || (!isMobile && nextPageIndex === 87)) &&
       !isAdminPanelEnabled
     ) {
       return;
@@ -445,11 +445,12 @@ const MainBook = () => {
     // <ConnectWallet />,
     // <BuyTicket />,
     // <Lottery />,
-    // <AdminPageLeft />,
-    // <AmdinPageRight isMobile={isMobile} />,
+    <AdminPageLeft />,
+    <AmdinPageRight isMobile={isMobile} />,
   ];
 
   const handleFlip = (e) => {
+    console.log(e?.data)
     setCurrentVisiblePage(e.data); // Update the current visible page
   };
 
