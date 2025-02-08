@@ -1,9 +1,9 @@
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { AwesomeButton } from "react-awesome-button";
 
 const NftPageLeft = React.forwardRef((props, ref) => {
-  const { createAsset, minting, mintingAsset, connected } = props;
+  const { createAsset, minting, mintingAsset, connected, isTransactionPerformed, setIsTransactionPerformed } = props;
   const [nfts, setNfts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [missingNFTs, setMissingNFTs] = useState([]);
@@ -21,16 +21,23 @@ const NftPageLeft = React.forwardRef((props, ref) => {
     }
   };
 
-  const fetchNFTs = async (pageNumber) => {
+  const fetchNFTs = async () => {
     setLoading(true);
 
-    const totalNFTs = 5; // Number of NFTs to fetch per page
+    const totalNFTs = 5; // Always aim to have 5 NFTs in state
     let fetchedNFTs = [];
     let missing = [];
+    
 
-    const nftPromises = Array.from({ length: totalNFTs }, (_, i) => {
-      // Calculate default ID
-      const id = (pageNumber - 1) * totalNFTs + i + 1;
+    const existingNFTs = [...nfts]; // Current NFTs
+    const fetchAfter =
+      Number(existingNFTs[existingNFTs.length - 1]?.name?.split("_")[1]) ?? 0;
+    let nextId = existingNFTs.length > 0 && !isTransactionPerformed ? fetchAfter + 1 : 1;
+
+    while (fetchedNFTs.length < totalNFTs) {
+      const id = nextId++;
+      const checkUrl = `https://nft.ikigaionsol.com/api/v1/nftid/${id}`;
+
       let price;
 
       // Replace specific IDs with custom filenames
@@ -49,50 +56,72 @@ const NftPageLeft = React.forwardRef((props, ref) => {
         price = 0.1;
       }
 
-      const url = `https://nft.ikigaionsol.com/media/${filename}.json`;
+      const metadataUrl = `https://nft.ikigaionsol.com/media/${filename}.json`;
 
-      return fetch(url)
-        .then(async (response) => {
-          if (!response.ok) throw new Error(`NFT ${filename}.json not found`);
-          const nftData = await response.json();
-          nftData.image = await fetchImageAsBlob(nftData.image);
+      try {
+        // Step 1: Check if NFT already exists
+        const checkResponse = await fetch(checkUrl);
+        if (!checkResponse.ok) throw new Error(`Failed to check NFT #${id}`);
 
-          // Store filename in NFT data for reference
-          nftData.fileName = filename;
-          nftData.price = price;
+        const checkData = await checkResponse.json();
+        if (checkData.exists) {
+          missing.push(id);
+          continue; // Skip fetching metadata if NFT already exists
+        }
+      } catch (error) {
+        console.log(`Error checking NFT #${id}: ${error.message}`);
+      }
 
-          return nftData;
-        })
-        .catch(() => {
-          missing.push(filename);
-          return null;
-        });
-    });
+      try {
+        // Step 2: Fetch metadata only if NFT doesn't exist
+        const metadataResponse = await fetch(metadataUrl);
+        if (!metadataResponse.ok)
+          throw new Error(`Metadata for NFT #${id} not found`);
 
-    const results = await Promise.allSettled(nftPromises);
+        const nftData = await metadataResponse.json();
+        nftData.image = await fetchImageAsBlob(nftData.image);
+        nftData.fileName = filename;
+        nftData.price = price;
 
-    fetchedNFTs = results
-      .filter((res) => res.status === "fulfilled" && res.value)
-      .map((res) => res.value);
+        fetchedNFTs.push(nftData);
+      } catch (error) {}
+    }
 
     if (nfts?.length > 0) {
-      setNfts((prevNfts) => [...prevNfts, ...fetchedNFTs]); // Add new NFTs to the existing ones
+      setNfts((prevNfts) => {
+        const updatedNFTs = [...prevNfts, ...fetchedNFTs]; // Keep only last 5 NFTs
+        return updatedNFTs;
+      });
     } else {
       setNfts(fetchedNFTs);
     }
 
     if (missingNFTs?.length > 0) {
-      setMissingNFTs((prevNfts) => [...prevNfts, ...missing]); // Add new NFTs to the existing ones
+      setMissingNFTs((prevNfts) => {
+        const updatedNFTs = [...prevNfts, ...missing]; // Keep only last 5 NFTs
+        return updatedNFTs;
+      });
     } else {
-      setMissingNFTs(missing); // Add new NFTs to the existing ones
+      setMissingNFTs(missing);
     }
 
     setLoading(false);
+    setIsTransactionPerformed(false)
 
     console.log(
-      `Loaded NFTs: ${fetchedNFTs.length}, Missing: ${missing.length}`
+      `Fetched new NFTs: ${fetchedNFTs.length}, Metadata not found: ${missingNFTs.length}`
     );
   };
+
+  useEffect(()=>{
+    if(isTransactionPerformed){
+      setNfts([])
+    }
+  },[isTransactionPerformed])
+
+  useImperativeHandle(ref, () => ({
+    fetchNFTs,
+  }));
 
   useEffect(() => {
     if (connected) {
@@ -104,6 +133,8 @@ const NftPageLeft = React.forwardRef((props, ref) => {
     setLoading(true);
     setPage((prevPage) => prevPage + 1); // Increment page number to fetch next set of NFTs
   };
+
+
 
   return (
     // nft panel view
@@ -212,7 +243,7 @@ const NftPageLeft = React.forwardRef((props, ref) => {
                   height: "auto",
                   marginTop: 20,
                 }}
-                disabled={loading}
+                disabled={loading || minting} 
                 onPress={loadMore}
               >
                 <span className="stake_main_font_style">

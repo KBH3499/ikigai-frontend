@@ -8,16 +8,29 @@ import Footer from "./components/presentation/footer";
 // Hooks
 import { useDarkMode } from "./provider/theme-provider";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import {
+  clusterApiUrl,
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+} from "@solana/web3.js";
 import { stakingData } from "./utils/constants";
 import NftPage from "./pages/nft/NftPage";
 import Lottery from "./pages/lottery/Lottery";
 import ConnectWallet from "./pages/connect-wallet/ConnectWallet";
 import BuyTicket from "./pages/buy-tickets/BuyTicket";
 import HistoryTicket from "./pages/history-ticket/HistoryTicket";
-import { createTransferCheckedInstruction, getAssociatedTokenAddress } from "@solana/spl-token";
+import {
+  createTransferCheckedInstruction,
+  getAssociatedTokenAddress,
+} from "@solana/spl-token";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { create, fetchAsset, fetchCollection } from "@metaplex-foundation/mpl-core";
+import {
+  create,
+  fetchAsset,
+  fetchCollection,
+} from "@metaplex-foundation/mpl-core";
 import { generateSigner } from "@metaplex-foundation/umi";
 import bs58 from "bs58"; // ✅ Import bs58 for Base58 encoding
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
@@ -25,7 +38,6 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 
 import { toast } from "react-toastify";
 import "@solana/wallet-adapter-react-ui/styles.css";
-
 
 const Page1 = React.lazy(() => import("./pages/page1"));
 const Page2 = React.lazy(() => import("./pages/page2"));
@@ -150,6 +162,9 @@ const MainBook = () => {
   const [currentVisiblePage, setCurrentVisiblePage] = useState(0);
   const [minting, setMinting] = useState(false);
   const [mintingAsset, setMintingAsset] = useState("");
+  const [isTransactionPerformed, setIsTransactionPerformed] = useState(true);
+  const childRef = useRef(null);
+  const childRef2 = useRef(null);
 
   const handleClick = () => {
     setIsPlaying(true);
@@ -180,9 +195,18 @@ const MainBook = () => {
     setCurrentPage(flipBook.current.pageFlip().getCurrentPageIndex());
   };
 
+  const handleFetchNFTs = () => {
+    if (childRef.current) {
+      childRef.current.fetchNFTs(); // Call the function from child
+    }
+    if(childRef2.current){
+      childRef2.current.fetchNFTs(); // Call the function from child
+    }
+  };
+
   const createAsset = async (assetId, amount) => {
-    setMinting(true)
-    setMintingAsset(assetId)
+    setMinting(true);
+    setMintingAsset(assetId);
     let assets = [];
     if (!publicKey || !connected) {
       console.error("Wallet not connected");
@@ -208,19 +232,17 @@ const MainBook = () => {
       tokenAddress,
       adminAddress
     );
-    
-    
-    try {
 
+    try {
       let collection;
-      console.log({umi})
+      console.log({ umi });
       const collectionAddress = new PublicKey(
         "3SsoHng2czRKa1Prdsihgm95DdKpo9Wi2F6yB8ANN8zi"
       );
 
       collection = await fetchCollection(umi, collectionAddress);
       console.log(`Fetched Collection Address: ${collection.publicKey}`);
-      if (!wallet || !wallet.publicKey || !collection ) {
+      if (!wallet || !wallet.publicKey || !collection) {
         console.error(
           "Phantom wallet is not connected or publicKey is missing."
         );
@@ -229,7 +251,7 @@ const MainBook = () => {
 
       // Fetch the latest blockhash for transaction finalization
       const { blockhash } = await connection.getLatestBlockhash();
-
+      
       // Create the transfer instruction
       const transferInstruction = createTransferCheckedInstruction(
         userTokenAccount, // Sender's token account
@@ -258,11 +280,9 @@ const MainBook = () => {
       // Confirm transaction
       await connection.confirmTransaction(transferSignature, "finalized");
 
-
       console.log(`Token transfer successful: ${transferSignature}`);
 
       if (transferSignature) {
-
         const assetAddress = generateSigner(umi);
         console.log(`Creating asset: ${assetAddress.publicKey}`);
 
@@ -285,9 +305,26 @@ const MainBook = () => {
         // ✅ Ensure finalization before fetching asset
         await connection.confirmTransaction(txSignature, "finalized");
         console.log("Transaction finalized on-chain.");
-        setMinting(false)
-        setMintingAsset("")
-  
+        const requestOptions = {
+          method: "POST",
+          redirect: "follow",
+        };
+
+        fetch(
+          `https://nft.ikigaionsol.com/api/v1/nftid/${assetId?.split("_")[1]}`,
+          requestOptions
+        )
+          .then((response) => {
+            response.text();
+            setMinting(false);
+            setMintingAsset("");
+            setIsTransactionPerformed(true)
+            // handleFetchNFTs()
+            toast.success("NFT Minted Successfully");
+            window.location.reload();
+          })
+          .then((result) => console.log(result))
+          .catch((error) => console.error(error));
         // ✅ Retry fetching the asset with a delay
         let asset;
         for (let attempt = 0; attempt < 5; attempt++) {
@@ -305,9 +342,9 @@ const MainBook = () => {
         console.error("Failed to fetch asset after multiple attempts.");
       }
     } catch (error) {
-      toast.error(error)
-      setMinting(false)
-      setMintingAsset("")
+      toast.error(error);
+      setMinting(false);
+      setMintingAsset("");
       console.error("Error in token transfer:", error);
     }
   };
@@ -439,8 +476,24 @@ const MainBook = () => {
     />,
     <MusicPageLeft />,
     <MusicPageRight isMobile={isMobile} />,
-    <NftPageLeft createAsset={createAsset} minting={minting} mintingAsset={mintingAsset} connected={connected}/>,
-    <NftPageRight createAsset={createAsset} minting={minting} mintingAsset={mintingAsset} connected={connected}/>,
+    <NftPageLeft
+      createAsset={createAsset}
+      minting={minting}
+      mintingAsset={mintingAsset}
+      connected={connected}
+      ref={childRef}
+      isTransactionPerformed={isTransactionPerformed}
+      setIsTransactionPerformed={setIsTransactionPerformed}
+    />,
+    <NftPageRight
+      createAsset={createAsset}
+      minting={minting}
+      mintingAsset={mintingAsset}
+      connected={connected}
+      ref={childRef2}
+      isTransactionPerformed={isTransactionPerformed}
+      setIsTransactionPerformed={setIsTransactionPerformed}
+    />,
     // <HistoryTicket />,
     // <ConnectWallet />,
     // <BuyTicket />,
@@ -450,7 +503,7 @@ const MainBook = () => {
   ];
 
   const handleFlip = (e) => {
-    console.log(e?.data)
+    console.log(e?.data);
     setCurrentVisiblePage(e.data); // Update the current visible page
   };
 
