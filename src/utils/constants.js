@@ -235,14 +235,26 @@ export const adminKeyPairTyke = {
 export const stakingData = {
     ikigai : {
         mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
-        stakeProg:"AproH98aNb7xEwGJRkRK7ruYhwfVEqPoYqTytBtGEaxy",
+        stakeProg:"ikiDdCwsrbdS2zBYdUEYXMALnDdBNtKwCoQgLVKz37F",
         admin: adminKeyPair
     },
     tyke: {
         mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
-        stakeProg:"Apro1E15gaCqp8ZtJZgt7LDm5X1iSscWdhYJQZCS2NDa",
-        admin: adminKeyPairTyke
+        stakeProg:"ikiDdCwsrbdS2zBYdUEYXMALnDdBNtKwCoQgLVKz37F",
+        admin: adminKeyPair
     }
 }
+// export const stakingData = {
+//     ikigai : {
+//         mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
+//         stakeProg:"AproH98aNb7xEwGJRkRK7ruYhwfVEqPoYqTytBtGEaxy",
+//         admin: adminKeyPair
+//     },
+//     tyke: {
+//         mintAddr: "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE",
+//         stakeProg:"Apro1E15gaCqp8ZtJZgt7LDm5X1iSscWdhYJQZCS2NDa",
+//         admin: adminKeyPairTyke
+//     }
+// }
 
 export const MAX_ASSET_COUNT = 1000;

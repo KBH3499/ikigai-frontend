@@ -846,12 +846,12 @@ code {
 }
 
 .input_form_element_select {
-  width: 100%;
+  /* width: 100%; */
   height: 40px;
   font-size: 20px;
   border: 1px solid black;
   border-radius: 5px;
-  min-width: 220px;
+  /* min-width: 220px; */
 }
 .input_form_element_data {
   width: 100%;
@@ -859,18 +859,31 @@ code {
   font-size: 20px;
   border: 1px solid black;
   border-radius: 5px;
-  min-width: 210px;
+  /* min-width: 210px; */
+}
+
+.main-class {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px
 }
 
 @media (max-width: 768px){
-  .input_form_element_select {
-    min-width: 0;
-    width: 180px;
+  .main-class{
+    display: flex;
+    flex-direction: column;
+    max-height: 290px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
+  /* .input_form_element_select { */
+    /* min-width: 0;
+    width: 180px; */
+  /* }
   .input_form_element_data {
     min-width: 0;
     width: 180px;
-  }
+  } */
 }
 
 .textarea_form_element {

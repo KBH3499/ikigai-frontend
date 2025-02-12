@@ -534,7 +534,18 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                 adminStakingWallet: adminTokenAccount.address,
                 stakingToken: tokenToMint,
                 tokenProgram: TOKEN_PROGRAM_ID,
+                poolInfo: poolInfoPDA
             };
+
+            console.log({
+                user: userWallet?.toString(),
+                admin: selectedTokenDetails.admin.publicKey?.toString(),
+                userInfo: userInfoPDA?.toString(),
+                userStakingWallet: userStakingWallet.address?.toString(),
+                adminStakingWallet: adminTokenAccount.address?.toString(),
+                stakingToken: tokenToMint?.toString(),
+                tokenProgram: TOKEN_PROGRAM_ID?.toString(),
+            })
 
             const tx = await currentProgram.methods
                 .claimReward()
@@ -544,10 +555,10 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
             console.log("Stake transaction successful:", tx);
             if (tx) {
+                toast("Successfully Claimed");
                 setIsClaiming(false);
                 props.setIsClaimed(true);
                 getUserInfo();
-                toast("Successfully Claimed");
             }
         } catch (error) {
             setIsClaiming(false);

@@ -14,6 +14,9 @@ const AdminPageRight = React.forwardRef((props, ref) => {
   const [lockPeriod, setLockPeriod] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rewardPercentage, setRewardPercentage] = useState();
+  const [rewardNormalAsset, setRewardNormalAsset] = useState();
+  const [rewardSpecialAsset, setRewardSpecialAsset] = useState();
+  const [isPoolOpen, setIsPoolOpen] = useState();
   const { wallet } = useWallet()
   const opts = { preflightCommitment: "processed" };
   const network = WalletAdapterNetwork.Devnet;
@@ -55,6 +58,18 @@ const AdminPageRight = React.forwardRef((props, ref) => {
     }
   }
 
+  const handleSelectedPoolOpen = (e) => {
+    switch (e.target.value) {
+      case 'True':
+        setIsPoolOpen(true)
+        break;
+      case 'False':
+        setIsPoolOpen(false)
+      default:
+        break;
+    }
+  }
+
   const handlePoolStakeChange = (e) => {
     const value = e.target.value;
     const dynamicValue = `${value}e9`
@@ -86,25 +101,48 @@ const AdminPageRight = React.forwardRef((props, ref) => {
       setRewardPercentage(bnAmount); // Log only valid numbers
     }
   };
+  const handleRewardPercentageChangeNormal = (e) => {
+    const value = e.target.value;
+    const bnAmount = new BN(Number(value));
+    if (!isNaN(value)) {
+      setRewardNormalAsset(bnAmount); // Log only valid numbers
+    }
+  };
+  const handleRewardPercentageChangeSpecial = (e) => {
+    const value = e.target.value;
+    const bnAmount = new BN(Number(value));
+    if (!isNaN(value)) {
+      setRewardSpecialAsset(bnAmount); // Log only valid numbers
+    }
+  };
 
   const updatePool = async () => {
     try {
       setIsSubmitting(true)
+      const currentTime = Math.floor(Date.now() / 1000); // Current Unix timestamp
       const index = selectedPool
       const newDetail = {
         lockSeconds: lockPeriod,
         poolSize: poolStakeSize,
         userLimit: userStakeLimit,
         rewardPercentage: rewardPercentage,
+        isOpen: isPoolOpen,
+        startTime: new BN(currentTime),
+        normalAssetRewardPercentage: rewardNormalAsset,
+        specialAssetRewardPercentage: rewardSpecialAsset,
       }
 
       console.log({
         index,
-        newDetail:{
-          lockPeriod:lockPeriod?.toString(),
+        newDetail: {
+          lockPeriod: lockPeriod?.toString(),
           poolSize: poolStakeSize?.toString(),
           userLimit: userStakeLimit?.toString(),
           rewardPercentage: rewardPercentage?.toString(),
+          isOpen: isPoolOpen,
+          startTime: new BN(currentTime)?.toString(),
+          normalAssetRewardPercentage: rewardNormalAsset?.toString(),
+          specialAssetRewardPercentage: rewardSpecialAsset?.toString(),
         },
         stakeProg: stakingData[selectedToken]?.stakeProg,
       })
@@ -133,7 +171,7 @@ const AdminPageRight = React.forwardRef((props, ref) => {
         .rpc();
 
       console.log("Stake transaction successful:", tx);
-      if(tx){
+      if (tx) {
         setIsSubmitting(false)
         alert("Successfully Updated Details")
       }
@@ -149,38 +187,48 @@ const AdminPageRight = React.forwardRef((props, ref) => {
     <div className={`demoPage comic_background_white_right ${props?.isMobile ? "" : "center_div"}`} ref={ref}>
       <div className="admin-form"><h1 className="font admin-font">Update Pool</h1>
         <div className="contact_us_canvas">
-          <div style={{ padding: "0.5vh" }}>
-            <select className="input_form_element_select" onChange={handleSelectedToken}>
-            {/* <select className="input_form_element" onChange={handleSelectedToken}> */}
-              <option>Select Token</option>
-              <option>ikigai</option>
-              <option>tyke</option>
-            </select>
-          </div>
-          <div style={{ padding: "0.5vh" }}>
-            <select className="input_form_element_select" onChange={handleSelectedPool}>
-              <option>Select Pool</option>
-              <option>1 Month</option>
-              <option>3 Month</option>
-              <option>6 Month</option>
-              <option>12 Month</option>
-            </select>
-          </div>
-          <div style={{ padding: "0.5vh" }}>
-            <input
-              className="input_form_element_data"
-              placeholder="Pool Size"
-              type="number"
-              onChange={handlePoolStakeChange}
-            />
-          </div>
-          <div style={{ padding: "0.5vh" }}>
-            <input
-              className="input_form_element_data"
-              placeholder="Stake Limit"
-              type="number"
-              onChange={handleUserStakeLimitChange}
-            />
+          <div
+            className="main-class"
+          >
+            <div style={{ padding: "0.5vh" }}>
+              <select className="input_form_element_select" onChange={handleSelectedToken}>
+                <option>Select Token</option>
+                <option>ikigai</option>
+                <option>tyke</option>
+              </select>
+            </div>
+            <div style={{ padding: "0.5vh" }}>
+              <select className="input_form_element_select" onChange={handleSelectedPool}>
+                <option>Select Pool</option>
+                <option>1 Month</option>
+                <option>3 Month</option>
+                <option>6 Month</option>
+                <option>12 Month</option>
+              </select>
+            </div>
+            <div style={{ padding: "0.5vh" }}>
+              <select className="input_form_element_select" onChange={handleSelectedPoolOpen}>
+                <option>Pool Open</option>
+                <option>True</option>
+                <option>False</option>
+              </select>
+            </div>
+            <div style={{ padding: "0.5vh" }}>
+              <input
+                className="input_form_element_data"
+                placeholder="Pool Size"
+                type="number"
+                onChange={handlePoolStakeChange}
+              />
+            </div>
+            <div style={{ padding: "0.5vh" }}>
+              <input
+                className="input_form_element_data"
+                placeholder="Stake Limit"
+                type="number"
+                onChange={handleUserStakeLimitChange}
+              />
+            </div>
             <div style={{ padding: "0.5vh" }}>
               <input
                 className="input_form_element_data"
@@ -189,33 +237,51 @@ const AdminPageRight = React.forwardRef((props, ref) => {
                 onChange={handleLockPeriodChange}
               />
             </div>
+            <div style={{ padding: "0.5vh" }}>
+              <input
+                className="input_form_element_data"
+                placeholder="Reward %"
+                type="number"
+                onChange={handleRewardPercentageChange}
+              />
+            </div>
+            <div style={{ padding: "0.5vh" }}>
+              <input
+                className="input_form_element_data"
+                placeholder="Normal Asset Reward %"
+                type="number"
+                onChange={handleRewardPercentageChangeNormal}
+              />
+            </div>            
+            <div style={{ padding: "0.5vh" }}>
+              <input
+                className="input_form_element_data"
+                placeholder="Special Asset Reward %"
+                type="number"
+                onChange={handleRewardPercentageChangeSpecial}
+              />
+            </div>
+
+            {/* Full-width button */}
+            <div style={{ gridColumn: "span 2", padding: "10px" }}>
+              <button
+                onClick={updatePool}
+                className="submit_button_admin"
+                type="submit"
+                style={{
+                  textDecoration: "none",
+                  width: "100%",
+                  height: "100%",
+                  cursor: isSubmitting ? "not-allowed" : "pointer",
+                  opacity: isSubmitting ? 0.5 : 1,
+                }}
+                disabled={isSubmitting}
+              >
+                <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
+              </button>
+            </div>
           </div>
-          <div style={{ padding: "0.5vh" }}>
-            <input
-              className="input_form_element_data"
-              placeholder="Reward %"
-              type="number"
-              onChange={handleRewardPercentageChange}
-            />
-          </div>
-          <div style={{ width: "100%", padding: "10px" }}>
-            <button
-              onClick={updatePool}
-              className="submit_button_admin"
-              type="submit"
-              style={{
-                textDecoration: "none",
-                width: "100%",
-                height: "100%",
-                cursor: isSubmitting ? "not-allowed" : "pointer",
-                opacity: isSubmitting ? 0.5 : 1,
-                marginLeft: -30
-              }}
-              disabled={isSubmitting}
-            >
-              <span>{isSubmitting ? "Submiting..." : "Submit"}</span>
-            </button>
-          </div>
+
         </div>
       </div>
     </div>

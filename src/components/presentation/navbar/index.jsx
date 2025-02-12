@@ -311,7 +311,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                             target="_blank"
                           >
                             <span style={{ color: "yellow" }}>
-                            AscendEx
+                              AscendEx
                             </span>
                           </a>
                         </AwesomeButton>
@@ -473,7 +473,7 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                     Staking
                   </span>
                 </AwesomeButton> */}
-                                <div
+                <div
                   className="comic_dropdown"
                   style={{ position: "relative" }}
                 >
@@ -487,6 +487,27 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                   </AwesomeButton>
                   <div className="dropdown">
                     <div className="dropdown-content">
+                      {isAdminPanelEnabled && <div>
+                        <AwesomeButton
+                          className="nav_button_padding"
+                          type="secondary"
+                          style={{
+                            fontFamily: "KaoriGelBold",
+                            paddingTop: "10px",
+                            paddingRight: "2px",
+                            paddingLeft: "2px",
+                          }}
+                          onPress={() => {
+                            flipBook.current.pageFlip().flip(88, "top");
+                            if (isShrinkNav) {
+                              toggleMenu();
+                            }
+                          }}
+                        >
+                          Admin
+
+                        </AwesomeButton>
+                      </div>}
                       <div>
                         <AwesomeButton
                           className="nav_button_padding"
@@ -504,8 +525,8 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                             }
                           }}
                         >
-                            Staking
-                          
+                          Staking
+
                         </AwesomeButton>
                       </div>
                       <div>
@@ -525,32 +546,14 @@ const Navbar = ({ flipBook, nextButtonClick, isShrinkNav, isAdminPanelEnabled })
                             }
                           }}
                         >
-                            Mint Nft
-                          
+                          Mint Nft
+
                         </AwesomeButton>
                       </div>
                     </div>
                   </div>
                 </div>
-                {isAdminPanelEnabled && <AwesomeButton
-                  className="nav_button_padding"
-                  type={buttonType}
-                  style={{
-                    fontFamily: "KaoriGelBold",
-                    paddingRight: "2px",
-                    paddingLeft: "2px",
-                  }}
-                  onPress={() => {
-                    flipBook.current.pageFlip().flip(88, "top");
-                    if (isShrinkNav) {
-                      toggleMenu();
-                    }
-                  }}
-                >
-                  <span style={{ color: "yellow" }}>
-                    Admin
-                  </span>
-                </AwesomeButton>}
+
 
                 <AwesomeButton
                   className="nav_button_padding"
