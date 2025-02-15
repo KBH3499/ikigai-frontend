@@ -176,7 +176,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
 
     const handleInput = (e) => {
         const value = Number(e?.target?.value);
-        if (value <= userLimit) {
+        if (value < Number(balance)) {
             setStakeAmount(Number(e.target.value));
         }
     };
@@ -1393,9 +1393,10 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         <input
                                             onChange={handleInput}
                                             value={
-                                                stakeAmount > 0
-                                                    ? stakeAmount
-                                                    : ""
+                                                // stakeAmount > 0
+                                                    // ? 
+                                                    stakeAmount?.toLocaleString()
+                                                    // : ""
                                             }
                                             className="stake_stake_amount"
                                             placeholder="Please, insert amount of stake."
@@ -1403,11 +1404,11 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                         ></input>
                                     </div>
                                     <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
-                                        <div>Stake Limit : {userLimit > 0 ? userLimit : 0}</div>
+                                        {/* <div>Stake Limit : {userLimit > 0 ? userLimit : 0}</div> */}
                                         <div>Balance : {balance?.toLocaleString("en-US")}</div>
 
                                     </div>
-                                    <div
+                                    {/* <div
                                         className="stake_stake_auto_compounding_select"
                                         style={{
                                             marginBottom: "20px",
@@ -1437,7 +1438,7 @@ const StakingPageRight = React.forwardRef((props, ref) => {
                                                 ></input>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <div
                                     style={{ paddingRight: "10px", width: "80%" }}
