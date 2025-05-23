@@ -15,7 +15,7 @@ import {
   PublicKey,
   Transaction,
 } from "@solana/web3.js";
-import { stakingData } from "./utils/constants";
+import { adminKeyPair, stakingData } from "./utils/constants";
 import NftPage from "./pages/nft/NftPage";
 import Lottery from "./pages/lottery/Lottery";
 import ConnectWallet from "./pages/connect-wallet/ConnectWallet";
@@ -30,14 +30,19 @@ import {
   create,
   fetchAsset,
   fetchCollection,
+  mplCore,
+  transferV1,
 } from "@metaplex-foundation/mpl-core";
-import { generateSigner } from "@metaplex-foundation/umi";
+import { generateSigner, transactionBuilder, publicKey, createSignerFromKeypair, keypairIdentity } from "@metaplex-foundation/umi";
 import bs58 from "bs58"; // ✅ Import bs58 for Base58 encoding
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import { mplHybrid } from "@metaplex-foundation/mpl-hybrid";
 
 import { toast } from "react-toastify";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import { fromWeb3JsInstruction } from "@metaplex-foundation/umi-web3js-adapters";
 
 const Page1 = React.lazy(() => import("./pages/page1"));
 const Page2 = React.lazy(() => import("./pages/page2"));
@@ -149,7 +154,7 @@ const MainBook = () => {
 
   const connection = new Connection(endpoint);
 
-  const { publicKey, signTransaction, connected } = wallet;
+  const { connected } = wallet;
   const [isAdminPanelEnabled, setIsAdminPanelEnabled] = useState();
   const [isClaimed, setIsClaimed] = useState(false);
   const [totalReward, setTotalReward] = useState(0);
@@ -199,7 +204,7 @@ const MainBook = () => {
     if (childRef.current) {
       childRef.current.fetchNFTs(); // Call the function from child
     }
-    if(childRef2.current){
+    if (childRef2.current) {
       childRef2.current.fetchNFTs(); // Call the function from child
     }
   };
@@ -208,38 +213,60 @@ const MainBook = () => {
     setMinting(true);
     setMintingAsset(assetId);
     let assets = [];
-    if (!publicKey || !connected) {
+    if (!wallet?.publicKey || !connected) {
       console.error("Wallet not connected");
       return;
     }
 
     const BASE_URL = `https://nft.ikigaionsol.com/media/${assetId}.json`;
-    umi.use(walletAdapterIdentity(wallet));
+    umi.use(walletAdapterIdentity(wallet?.wallet?.adapter));
+    console.log({ umi: umi?.identity })
 
     // Token and admin addresses (use actual addresses here)
-    const tokenAddress = new PublicKey(
-      "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE"
+    // const tokenAddress = new PublicKey(
+    //   "84AYw2XZ5HcyWWmVNR6s4uS3baHrMLpPMnEfBTm6JkdE"
+    // );
+
+    const TOKEN_MINT = new PublicKey(
+      "3rmmfLGZco2Q2sQvW3oSKjUch314gtNosXvFLKWt3QEj"
     );
+
+    // SPL Token Program ID
+    const SPL_TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+
     const adminAddress = new PublicKey(
       "DG6ZWtgMqYo4P9wsjF5vetosPZmthk33AxJCgeBEY7nr"
     );
 
     const userTokenAccount = await getAssociatedTokenAddress(
-      tokenAddress,
-      publicKey
+      TOKEN_MINT,
+      wallet?.publicKey,
+      false
     );
     const adminTokenAccount = await getAssociatedTokenAddress(
-      tokenAddress,
-      adminAddress
+      TOKEN_MINT,
+      adminAddress,
+      false
+    );
+
+    const transferTokenIx = createTransferCheckedInstruction(
+      userTokenAccount, // Sender's token account
+      TOKEN_MINT, // Token address (mint address)
+      adminTokenAccount, // Receiver's token account
+      wallet.publicKey, // Sender's public key (signer)
+      amount * 10 ** 9, // Amount (5 tokens with 9 decimals)
+      8 // Token decimals
+    );
+
+    const umiTransferTokenIx = fromWeb3JsInstruction(transferTokenIx);
+
+    const collectionAddress = publicKey(
+      "6BNmccWQhcMfwMy61E6SjGVutUNxfkGr52KrqJq4qmHj"
     );
 
     try {
       let collection;
       console.log({ umi });
-      const collectionAddress = new PublicKey(
-        "3SsoHng2czRKa1Prdsihgm95DdKpo9Wi2F6yB8ANN8zi"
-      );
-
       collection = await fetchCollection(umi, collectionAddress);
       console.log(`Fetched Collection Address: ${collection.publicKey}`);
       if (!wallet || !wallet.publicKey || !collection) {
@@ -250,97 +277,152 @@ const MainBook = () => {
       }
 
       // Fetch the latest blockhash for transaction finalization
-      const { blockhash } = await connection.getLatestBlockhash();
-      
-      // Create the transfer instruction
-      const transferInstruction = createTransferCheckedInstruction(
-        userTokenAccount, // Sender's token account
-        tokenAddress, // Token address (mint address)
-        adminTokenAccount, // Receiver's token account
-        wallet.publicKey, // Sender's public key (signer)
-        amount * 10 ** 9, // Amount (5 tokens with 9 decimals)
-        9 // Token decimals
+      // const { blockhash } = await connection.getLatestBlockhash();
+
+      // // Create the transfer instruction
+      // const transferInstruction = createTransferCheckedInstruction(
+      //   userTokenAccount, // Sender's token account
+      //   tokenAddress, // Token address (mint address)
+      //   adminTokenAccount, // Receiver's token account
+      //   wallet.publicKey, // Sender's public key (signer)
+      //   amount * 10 ** 9, // Amount (5 tokens with 9 decimals)
+      //   9 // Token decimals
+      // );
+
+      // // Create a new transaction
+      // const transferTx = new Transaction().add(transferInstruction);
+
+      // // Set blockhash and fee payer
+      // transferTx.recentBlockhash = blockhash;
+      // transferTx.feePayer = wallet.publicKey;
+
+      // // Sign transaction with wallet
+      // const signedTx = await signTransaction(transferTx);
+
+      // // Send transaction
+      // const transferSignature = await connection.sendRawTransaction(
+      //   signedTx.serialize()
+      // );
+
+      // // Confirm transaction
+      // await connection.confirmTransaction(transferSignature, "finalized");
+
+      // console.log(`Token transfer successful: ${transferSignature}`);
+
+      // if (transferSignature) {
+      const assetAddress = generateSigner(umi);
+      console.log(`Creating asset: ${assetAddress.publicKey}`);
+
+      // const transaction = create(umi, {
+      //   asset: assetAddress,
+      //   collection: collection.publicKey,
+      //   owner: umi.identity.publicKey,
+      //   authority: umi.identity.publicKey,
+      //   name: `IKIGAI NFT`,
+      //   uri: BASE_URL,
+      // });
+
+      const secretKey = new Uint8Array([
+        94, 151, 93, 0, 25, 5, 134, 253, 214, 188, 70, 211, 117, 112, 184, 76,
+        213, 127, 250, 198, 196, 2, 158, 247, 254, 43, 143, 9, 30, 161, 15, 19,
+        123, 60, 23, 68, 221, 188, 39, 141, 231, 49, 223, 38, 96, 137, 27, 73, 63,
+        137, 161, 112, 44, 138, 132, 147, 26, 227, 39, 161, 114, 78, 139, 160,
+      ]);
+
+      // Generate Keypair from Secret Key
+      // const adminKeyPairNFT = Keypair.fromSecretKey(secretKey);
+      const adminKeyPairNFT = umi.eddsa.createKeypairFromSecretKey(secretKey)
+      const adminSigner = createSignerFromKeypair(umi, adminKeyPairNFT);
+      umi.use(keypairIdentity(adminKeyPairNFT));
+
+      // Load necessary Umi plugins for token metadata, core functionality, and MPL Hybrid features
+      umi.use(mplTokenMetadata());
+      umi.use(mplCore());
+      umi.use(mplHybrid());
+      const transaction = create(umi, {
+        asset: assetAddress,
+        collection: collection,
+        owner: adminSigner.publicKey,
+        // authority: umi.identity.publicKey,
+        name: `User Asset`,
+        uri: BASE_URL,
+      });
+
+      const transferAssetTransaction = transferV1(umi, {
+        asset: assetAddress.publicKey,
+        collection: collectionAddress,
+        newOwner: wallet?.publicKey,
+      });
+
+      const txBuilder = transactionBuilder()
+        .add({
+          instruction: umiTransferTokenIx,
+          signers: [umi.identity], // User signs the token transfer
+          bytesCreatedOnChain: 0, // No new accounts are created by this instruction
+          programId: SPL_TOKEN_PROGRAM_ID, // SPL Token Program ID
+        })
+        .add(transaction) // Admin creates the asset
+      // .add(transferAssetTransaction); // Admin transfers the asset to user
+      // Send and confirm the combined transaction
+      const { signature } = await txBuilder.sendAndConfirm(umi, {
+        confirm: { commitment: "finalized" },
+      });
+
+      // Encode the transaction signature to Base58 for display
+      const encodedSignature = bs58.encode(signature);
+      console.log(
+        `✅ Transaction completed! https://explorer.solana.com/tx/${encodedSignature}?cluster=devnet`
       );
 
-      // Create a new transaction
-      const transferTx = new Transaction().add(transferInstruction);
+      // Fetch and log the created asset
+      const asset = await fetchAsset(umi, assetAddress.publicKey);
+      console.log("Fetched Asset Details:", asset);
+      // // ✅ Ensure `txSignature` is Base58 encoded
+      // const txSignatureUint8Array = (await transaction.sendAndConfirm(umi))
+      //   .signature;
+      // const txSignature = bs58.encode(txSignatureUint8Array); // Convert Uint8Array to Base58
 
-      // Set blockhash and fee payer
-      transferTx.recentBlockhash = blockhash;
-      transferTx.feePayer = wallet.publicKey;
+      // console.log(`Asset creation confirmed with signature: ${txSignature}`);
 
-      // Sign transaction with wallet
-      const signedTx = await signTransaction(transferTx);
+      // // ✅ Ensure finalization before fetching asset
+      // await connection.confirmTransaction(txSignature, "finalized");
+      // console.log("Transaction finalized on-chain.");
+      // const requestOptions = {
+      //   method: "POST",
+      //   redirect: "follow",
+      // };
 
-      // Send transaction
-      const transferSignature = await connection.sendRawTransaction(
-        signedTx.serialize()
-      );
+      // fetch(
+      //   `https://nft.ikigaionsol.com/api/v1/nftid/${assetId?.split("_")[1]}`,
+      //   requestOptions
+      // )
+      //   .then((response) => {
+      //     response.text();
+      //     setMinting(false);
+      //     setMintingAsset("");
+      //     setIsTransactionPerformed(true)
+      //     // handleFetchNFTs()
+      //     toast.success("NFT Minted Successfully");
+      //     window.location.reload();
+      //   })
+      //   .then((result) => console.log(result))
+      //   .catch((error) => console.error(error));
+      // // ✅ Retry fetching the asset with a delay
+      // let asset;
+      // for (let attempt = 0; attempt < 5; attempt++) {
+      //   try {
+      //     asset = await fetchAsset(umi, assetAddress.publicKey);
+      //     console.log(`Fetched Asset Details: ${asset.publicKey}`);
+      //     assets.push(asset);
+      //     return assetAddress.publicKey;
+      //   } catch (error) {
+      //     console.warn(`Retrying asset fetch (Attempt ${attempt + 1}/5)...`);
+      //     await new Promise((resolve) => setTimeout(resolve, 3000));
+      //   }
+      // }
 
-      // Confirm transaction
-      await connection.confirmTransaction(transferSignature, "finalized");
-
-      console.log(`Token transfer successful: ${transferSignature}`);
-
-      if (transferSignature) {
-        const assetAddress = generateSigner(umi);
-        console.log(`Creating asset: ${assetAddress.publicKey}`);
-
-        const transaction = create(umi, {
-          asset: assetAddress,
-          collection: collection.publicKey,
-          owner: umi.identity.publicKey,
-          authority: umi.identity.publicKey,
-          name: `IKIGAI NFT`,
-          uri: BASE_URL,
-        });
-
-        // ✅ Ensure `txSignature` is Base58 encoded
-        const txSignatureUint8Array = (await transaction.sendAndConfirm(umi))
-          .signature;
-        const txSignature = bs58.encode(txSignatureUint8Array); // Convert Uint8Array to Base58
-
-        console.log(`Asset creation confirmed with signature: ${txSignature}`);
-
-        // ✅ Ensure finalization before fetching asset
-        await connection.confirmTransaction(txSignature, "finalized");
-        console.log("Transaction finalized on-chain.");
-        const requestOptions = {
-          method: "POST",
-          redirect: "follow",
-        };
-
-        fetch(
-          `https://nft.ikigaionsol.com/api/v1/nftid/${assetId?.split("_")[1]}`,
-          requestOptions
-        )
-          .then((response) => {
-            response.text();
-            setMinting(false);
-            setMintingAsset("");
-            setIsTransactionPerformed(true)
-            // handleFetchNFTs()
-            toast.success("NFT Minted Successfully");
-            window.location.reload();
-          })
-          .then((result) => console.log(result))
-          .catch((error) => console.error(error));
-        // ✅ Retry fetching the asset with a delay
-        let asset;
-        for (let attempt = 0; attempt < 5; attempt++) {
-          try {
-            asset = await fetchAsset(umi, assetAddress.publicKey);
-            console.log(`Fetched Asset Details: ${asset.publicKey}`);
-            assets.push(asset);
-            return assetAddress.publicKey;
-          } catch (error) {
-            console.warn(`Retrying asset fetch (Attempt ${attempt + 1}/5)...`);
-            await new Promise((resolve) => setTimeout(resolve, 3000));
-          }
-        }
-
-        console.error("Failed to fetch asset after multiple attempts.");
-      }
+      // console.error("Failed to fetch asset after multiple attempts.");
+      // }
     } catch (error) {
       toast.error(error);
       setMinting(false);
@@ -369,13 +451,13 @@ const MainBook = () => {
 
   useEffect(() => {
     if (connected) {
-      const temporaryAdmin = Keypair.fromSeed(publicKey.toBytes());
+      const temporaryAdmin = Keypair.fromSeed(wallet?.publicKey.toBytes());
       const temporaryAdminPublicKey = temporaryAdmin?.publicKey?.toString();
       if (
         temporaryAdminPublicKey ===
-          stakingData["ikigai"]?.admin?.publicKey?.toString() ||
+        stakingData["ikigai"]?.admin?.publicKey?.toString() ||
         temporaryAdminPublicKey ===
-          stakingData["tyke"]?.admin?.publicKey?.toString()
+        stakingData["tyke"]?.admin?.publicKey?.toString()
       ) {
         setIsAdminPanelEnabled(true);
       } else {
@@ -578,9 +660,8 @@ const MainBook = () => {
         )}
 
         <div
-          className={`book-cover ${
-            !isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""
-          }`}
+          className={`book-cover ${!isMobile && window.innerWidth <= 1535 ? "book-cover-small" : ""
+            }`}
           style={{ position: "relative" }}
         >
           <div style={{ width: "100%", height: "80%", position: "relative" }}>
